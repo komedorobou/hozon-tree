@@ -242,7 +242,10 @@ function rename(isNew) {
     document.body.classList.remove("editing");
     const v = inp.value.trim();
     if (ok && v) { if (!isNew) snap(); n.name = v; }
-    else if (isNew) { const p = parentOf(n.id); if (p) { p.kids = p.kids.filter(k => k.id !== n.id); sel = p.id; } }
+    else if (isNew || !n.name.trim()) {      // 名前が空の枝は残さん（見えへん枝ができる）
+      const p = parentOf(n.id);
+      if (p) { p.kids = p.kids.filter(k => k.id !== n.id); sel = p.id; }
+    }
     render();
   };
   inp.onblur = () => fin(true);
