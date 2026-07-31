@@ -141,13 +141,6 @@
    "kind": "ショートカット"
   },
   {
-   "name": "Epson iProjection Ver.4.10.lnk",
-   "dir": false,
-   "size": 1994,
-   "mtime": "2026/02/13 19:47",
-   "kind": "ショートカット"
-  },
-  {
    "name": "OneDrive.lnk",
    "dir": false,
    "size": 2071,
@@ -547,7 +540,7 @@
    "kind": "Excel"
   }
  ],
- "total": 78,
- "links": 19,
- "at": "2026/07/31 16:47"
+ "total": 77,
+ "links": 18,
+ "at": "2026/07/31 16:48"
 }
