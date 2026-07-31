@@ -169,13 +169,6 @@
    "kind": "ショートカット"
   },
   {
-   "name": "_改名済み.txt",
-   "dir": false,
-   "size": 1,
-   "mtime": "2026/07/31 17:26",
-   "kind": "テキスト"
-  },
-  {
    "name": "fax.lnk",
    "dir": false,
    "size": 581,
@@ -249,7 +242,7 @@
    "name": "~$23.3.6.docx",
    "dir": false,
    "size": 162,
-   "mtime": "2023/03/03 10:51",
+   "mtime": "2026/07/31 17:29",
    "kind": "Word"
   },
   {
@@ -540,7 +533,7 @@
    "kind": "Excel"
   }
  ],
- "total": 77,
+ "total": 76,
  "links": 18,
  "at": "2026/07/31 17:29"
 }
