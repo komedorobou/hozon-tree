@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>保存ルール　枝を生やす</title>
 <style>
-:root{--sumi:#1a1c1b;--ai:#16324f;--kin:#a8823c;--shu:#c8412f;--bg:#eceae3;--paper:#fdfdfb;--line:#c9c7bf}
+:root{--sideW:300px;--sumi:#1a1c1b;--ai:#16324f;--kin:#a8823c;--shu:#c8412f;--bg:#eceae3;--paper:#fdfdfb;--line:#c9c7bf}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--sumi);font:15px/1.6 "Yu Gothic UI","Meiryo",sans-serif;
@@ -19,8 +19,8 @@ header button{font:inherit;font-size:13px;padding:5px 13px;border:1px solid #fff
               color:#fff;border-radius:4px;cursor:pointer}
 header button:hover{background:#ffffff1a}
 
-#stage{position:absolute;inset:44px 300px 0 0;overflow:hidden;cursor:grab}
-#side{position:fixed;top:44px;right:0;bottom:0;width:300px;background:var(--paper);
+#stage{position:absolute;inset:44px var(--sideW) 0 0;overflow:hidden;cursor:grab}
+#side{position:fixed;top:44px;right:0;bottom:0;width:var(--sideW);background:var(--paper);
       border-left:1px solid var(--line);display:flex;flex-direction:column;z-index:8}
 #side h2{margin:0;padding:9px 14px;font-size:12px;letter-spacing:.1em;color:#55554f;
          border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
@@ -43,6 +43,9 @@ header button:hover{background:#ffffff1a}
 #side .foot{flex:none;border-top:1px solid var(--line);padding:6px 12px;font-size:11px;color:#8a8880}
 #side .dead{padding:16px 14px;font-size:12px;color:#8a8880;line-height:1.8}
 #side .dead b{color:var(--shu)}
+#grip{position:fixed;top:44px;bottom:0;right:var(--sideW);width:7px;margin-right:-3px;
+      cursor:col-resize;z-index:9;background:transparent}
+#grip:hover,#grip.on{background:#16324f33}
 .pickbtn{margin:6px 0;padding:7px 14px;border:1px solid var(--ai);background:var(--ai);color:#fff;border-radius:4px;font:inherit;font-size:13px;cursor:pointer}
 .pickbtn:hover{opacity:.88}
 #stage.drag{cursor:grabbing}
@@ -107,6 +110,7 @@ footer b{color:var(--sumi)}
   </div>
 </div>
 
+<div id="grip" title="ドラッグで幅を変えられる"></div>
 <aside id="side">
   <h2 id="dtHead"><span class="fold">▾</span>🖥 いまのデスクトップ<span class="n" id="dtCount"></span></h2>
   <div class="list" id="dtList"></div>
@@ -849,6 +853,30 @@ document.getElementById("zHead").onclick = () => {
   localStorage.setItem("fold-z", localStorage.getItem("fold-z") === "1" ? "0" : "1"); applyFold();
 };
 applyFold();
+
+
+/* ---- 右パネルの幅をドラッグで変える ---- */
+(function () {
+  const grip = document.getElementById("grip");
+  const setW = w => {
+    w = Math.max(220, Math.min(innerWidth - 320, w));
+    document.documentElement.style.setProperty("--sideW", w + "px");
+    localStorage.setItem("sideW", w);
+  };
+  const saved = parseInt(localStorage.getItem("sideW"));
+  if (saved) setW(saved);
+  grip.onmousedown = e => {
+    e.preventDefault();
+    grip.classList.add("on");
+    const mv = m => setW(innerWidth - m.clientX);
+    const up = () => {
+      grip.classList.remove("on");
+      removeEventListener("mousemove", mv); removeEventListener("mouseup", up);
+    };
+    addEventListener("mousemove", mv); addEventListener("mouseup", up);
+  };
+  grip.ondblclick = () => setW(300);       // 倍クリックで既定に戻す
+})();
 
 render(); fit(); syncLabel();
 if (!tree.kids.length) { sel = "r"; render(); }
