@@ -100,7 +100,6 @@ footer b{color:var(--sumi)}
   <button id="cloud">今すぐ保存</button>
   <button id="fit">全体を見る</button>
   <button id="ex">.txt で保存</button>
-  <button id="clr">最初から</button>
 </header>
 
 <div id="stage">
@@ -430,10 +429,6 @@ addEventListener("keydown", e => {
   else if (e.ctrlKey && e.key.toLowerCase() === "z") undoIt();
 });
 document.getElementById("fit").onclick = fit;
-document.getElementById("clr").onclick = () => {
-  if (!confirm("枝を全部落として最初から。ええ？")) return;
-  snap(); tree = { id: "r", name: "Z（本置き場）", kids: [] }; sel = null; render();
-};
 document.getElementById("ex").onclick = () => {
   const out = [];
   const w = (n, ind, last, top) => {
