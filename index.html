@@ -349,7 +349,6 @@ const apply = () => world.style.transform = `translate(${ox}px,${oy}px) scale(${
 stage.onmousedown = e => {
   if (e.target.closest(".node,.plus,.arw")) return;
   sel = null; render();
-  if (e.button !== 1) return;          // 画面移動は中ボタンだけ。左は選択解除のみ
   const sx = e.clientX - ox, sy = e.clientY - oy;
   stage.classList.add("drag");
   const mv = m => { ox = m.clientX - sx; oy = m.clientY - sy; apply(); };
