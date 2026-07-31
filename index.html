@@ -25,6 +25,9 @@ header button:hover{background:#ffffff1a}
 #side h2{margin:0;padding:9px 14px;font-size:12px;letter-spacing:.1em;color:#55554f;
          border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
 #side h2 .n{margin-left:auto;font-weight:400;color:#98968e;font-size:11px}
+#side h2{cursor:pointer;user-select:none}
+#side h2:hover{background:#f0f1ec}
+#side h2 .fold{width:12px;font-size:10px;color:#8a8880}
 #side .list{flex:1;overflow:auto;padding:4px 0;min-height:80px}
 #side #zList{flex:0 0 38%;border-top:1px solid var(--line)}
 #side #zHead{border-top:1px solid var(--line)}
@@ -105,10 +108,10 @@ footer b{color:var(--sumi)}
 </div>
 
 <aside id="side">
-  <h2>🖥 いまのデスクトップ<span class="n" id="dtCount"></span></h2>
+  <h2 id="dtHead"><span class="fold">▾</span>🖥 いまのデスクトップ<span class="n" id="dtCount"></span></h2>
   <div class="list" id="dtList"></div>
   <div class="foot" id="dtFoot">読み込み中…</div>
-  <h2 id="zHead">📂 枝の中身<span class="n" id="zCount"></span></h2>
+  <h2 id="zHead"><span class="fold">▾</span>📂 枝の中身<span class="n" id="zCount"></span></h2>
   <div class="list" id="zList"><div class="dead">枝をクリックしたら、その中に何が入ってるか出る</div></div>
 </aside>
 
@@ -824,6 +827,28 @@ async function stow(name, nodeId) {
 listDesktop();
 
 
+
+
+/* ---- 上下の折りたたみ ---- */
+function applyFold() {
+  const dtOff = localStorage.getItem("fold-dt") === "1";
+  const zOff  = localStorage.getItem("fold-z") === "1";
+  document.getElementById("dtList").style.display = dtOff ? "none" : "";
+  document.getElementById("dtFoot").style.display = dtOff ? "none" : "";
+  document.getElementById("zList").style.display  = zOff ? "none" : "";
+  document.querySelector("#dtHead .fold").textContent = dtOff ? "▸" : "▾";
+  document.querySelector("#zHead .fold").textContent  = zOff ? "▸" : "▾";
+  // 片方たたんだら、もう片方が伸びる
+  document.getElementById("zList").style.flex = dtOff ? "1 1 auto" : "0 0 38%";
+  document.getElementById("dtList").style.flex = zOff ? "1 1 auto" : "1 1 auto";
+}
+document.getElementById("dtHead").onclick = () => {
+  localStorage.setItem("fold-dt", localStorage.getItem("fold-dt") === "1" ? "0" : "1"); applyFold();
+};
+document.getElementById("zHead").onclick = () => {
+  localStorage.setItem("fold-z", localStorage.getItem("fold-z") === "1" ? "0" : "1"); applyFold();
+};
+applyFold();
 
 render(); fit(); syncLabel();
 if (!tree.kids.length) { sel = "r"; render(); }
