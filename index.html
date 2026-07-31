@@ -446,21 +446,41 @@ const dtIcon = e => {
 const dtKind = e => e.name.startsWith("~$") ? "junk"
   : /\.(lnk|url)$/i.test(e.name) ? "link" : e.dir ? "dir" : "file";
 
+const stamp = () => {
+  const d = new Date();
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+};
+
 async function pollDesktop() {
+  // ① このPCで読み役が動いてたら、そこから直に読む（＝今の中身）
   try {
     const r = await fetch(LOCAL + "?t=" + Math.random());
     const d = await r.json();
-    const sig = d.items.map(i => i.name + i.mtime).join("|");
-    if (sig !== dtSig) { dtSig = sig; drawDesktop(d); }
-    document.getElementById("dtFoot").textContent = "最新にする時は F5";
+    drawDesktop(d);
+    document.getElementById("dtFoot").textContent = "このPCから直読み中　F5で最新に";
+    // 他のPCでも見られるようにクラウドへ写しを置く
+    fetch(API + "?kind=desktop", {
+      method: "PUT", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tree: { ...d, at: stamp() } })
+    }).catch(() => {});
+    return;
+  } catch (e) { /* 読み役がおらん → クラウドの写しを見る */ }
+
+  // ② 写しを見る（あっちのPC用。OneDriveで中身は同じ）
+  try {
+    const r = await fetch(API + "?kind=desktop&t=" + Math.random());
+    const j = await r.json();
+    if (!j.tree) throw 0;
+    drawDesktop(j.tree);
+    document.getElementById("dtFoot").textContent = `${j.tree.at} 時点の写し（このPCには読み役がおらん）`;
   } catch (e) {
-    dtSig = "";
     document.getElementById("dtCount").textContent = "";
     document.getElementById("dtList").innerHTML =
-      `<div class="dead"><b>つながらん</b><br>このPCで「デスクトップ取得」を動かして。<br>
-       デスクトップの <b>デスクトップ取得.bat</b> をダブルクリック。<br>
-       （立ち上げたら勝手にここに出る）</div>`;
-    document.getElementById("dtFoot").textContent = "停止中";
+      `<div class="dead"><b>まだ何も無い</b><br>読み役が動いてるPCで一度この画面を開いたら、<br>
+       ここにも同じ一覧が出るようになる。<br><br>
+       読み役＝デスクトップの <b>デスクトップ取得.bat</b></div>`;
+    document.getElementById("dtFoot").textContent = "—";
   }
 }
 function drawDesktop(d) {
