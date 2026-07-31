@@ -476,16 +476,29 @@ async function allow(h) {                       // 権利があるか確かめ�
   return null;
 }
 
+/* Chromeはデスクトップ本体を選ばせてくれん。親（OneDrive）を選んでもろて中を掘る */
+async function digDesktop(h) {
+  const kids = [];
+  for await (const [n, e] of h.entries()) if (e.kind === "directory") kids.push(n);
+  for (const c of ["デスクトップ", "Desktop"]) {
+    if (kids.includes(c)) return await h.getDirectoryHandle(c);
+  }
+  return h;                       // 既にデスクトップそのものやった場合
+}
+
 async function pick(which) {
   try {
-    const h = await showDirectoryPicker({
-      id: which, mode: "readwrite",
-      startIn: which === "desk" ? "desktop" : undefined
-    });
+    let h = await showDirectoryPicker({ id: which, mode: "readwrite" });
+    if (which === "desk") { h = await digDesktop(h); deskH = h; }
+    else zH = h;
     await store.set(which, h);
-    if (which === "desk") deskH = h; else zH = h;
     listDesktop();
-  } catch (e) { /* 選ぶのをやめただけ */ }
+  } catch (e) {
+    if (e && e.name === "AbortError") return;
+    alert("そのフォルダは選べんかった：" + (e.message || e)
+      + "\n\nデスクトップは Chrome が直接は開かせてくれん。"
+      + "\nひとつ上の「OneDrive」フォルダを選んで。中のデスクトップを勝手に使う。");
+  }
 }
 
 /* 枝の道順（根＝Zそのものなので根の名前は含めん） */
@@ -532,8 +545,10 @@ async function listDesktop() {
   if (!deskH || !zH) {
     list.innerHTML = `<div class="dead">
       このPCで一度だけ場所を教えて。<br><br>
-      <button class="pickbtn" id="pk1">${deskH ? "✓ " : ""}デスクトップを選ぶ</button><br>
-      <button class="pickbtn" id="pk2">${zH ? "✓ " : ""}Zドライブを選ぶ</button><br><br>
+      <button class="pickbtn" id="pk1">${deskH ? "✓ " : ""}① OneDrive フォルダを選ぶ</button><br>
+      <span style="font-size:11px">C:\\Users\\KSR\\<b>OneDrive</b> を選んで「フォルダーの選択」→「編集を許可」。<br>
+      中の「デスクトップ」を自動で使う（Chromeがデスクトップ直接は拒むため）</span><br><br>
+      <button class="pickbtn" id="pk2">${zH ? "✓ " : ""}② Z ドライブを選ぶ</button><br><br>
       次からは覚えてる（PCごとに1回）。</div>`;
     document.getElementById("pk1").onclick = () => pick("desk");
     document.getElementById("pk2").onclick = () => pick("z");
