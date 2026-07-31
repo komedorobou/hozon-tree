@@ -287,7 +287,7 @@ let sc = 1, ox = 0, oy = 0;
 const world = document.getElementById("world"), stage = document.getElementById("stage");
 const apply = () => world.style.transform = `translate(${ox}px,${oy}px) scale(${sc})`;
 stage.onmousedown = e => {
-  if (e.target.closest(".node,.plus")) return;
+  if (e.target.closest(".node,.plus,.arw")) return;
   sel = null; render();
   const sx = e.clientX - ox, sy = e.clientY - oy;
   stage.classList.add("drag");
