@@ -204,13 +204,6 @@
    "kind": "Excel"
   },
   {
-   "name": "~$23.2.27.docx",
-   "dir": false,
-   "size": 162,
-   "mtime": "2023/03/03 09:54",
-   "kind": "Word"
-  },
-  {
    "name": "~$23残存期間分の納入.シニア加入案内.doc",
    "dir": false,
    "size": 162,
@@ -463,7 +456,7 @@
    "kind": "Excel"
   }
  ],
- "total": 66,
+ "total": 65,
  "links": 18,
  "at": "2026/07/31 17:40"
 }
