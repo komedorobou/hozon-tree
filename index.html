@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>保存ルール　枝を生やす</title>
+<style>
+:root{--sumi:#1a1c1b;--ai:#16324f;--kin:#a8823c;--shu:#c8412f;--bg:#eceae3;--paper:#fdfdfb;--line:#c9c7bf}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--sumi);font:15px/1.6 "Yu Gothic UI","Meiryo",sans-serif;
+     overflow:hidden;user-select:none}
+header{position:fixed;inset:0 0 auto 0;z-index:10;background:var(--ai);color:#fff;
+       padding:10px 20px;display:flex;align-items:center;gap:16px}
+header .t{font-weight:700;letter-spacing:.14em;font-size:13px}
+header .h{font-size:12px;opacity:.72}
+header .h b{color:#f0d79a;font-weight:700}
+header .sp{flex:1}
+header button{font:inherit;font-size:13px;padding:5px 13px;border:1px solid #ffffff40;background:none;
+              color:#fff;border-radius:4px;cursor:pointer}
+header button:hover{background:#ffffff1a}
+
+#stage{position:absolute;inset:44px 0 0 0;overflow:hidden;cursor:grab}
+#stage.drag{cursor:grabbing}
+#world{position:absolute;left:0;top:0;transform-origin:0 0}
+svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+path{fill:none;stroke:var(--line);stroke-width:2}
+path.grow{stroke-dasharray:400;stroke-dashoffset:400;animation:draw .45s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+.node{position:absolute;display:flex;align-items:center;height:34px;padding:0 14px;background:var(--paper);
+      border:1px solid var(--line);border-radius:17px;white-space:nowrap;cursor:pointer;
+      box-shadow:0 1px 2px #00000012;transition:border-color .12s,box-shadow .12s}
+.node:hover{border-color:var(--ai)}
+.node.sel{border-color:var(--ai);box-shadow:0 0 0 3px #16324f22}
+.node.root{background:var(--ai);color:#fff;border-color:var(--ai);font-weight:700;letter-spacing:.08em}
+.node.pop{animation:pop .34s cubic-bezier(.2,1.5,.5,1)}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.node .cnt{margin-left:9px;font-size:11px;color:#98968e}
+.node.root .cnt{color:#ffffff8c}
+.node input{font:inherit;border:none;outline:none;background:transparent;color:inherit;width:9em}
+
+.plus{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--paper);
+      border:1px solid var(--line);color:var(--ai);display:grid;place-items:center;font-size:15px;
+      line-height:1;cursor:pointer;opacity:0;transition:.12s}
+.plus:hover{background:var(--ai);color:#fff;border-color:var(--ai)}
+.node:hover + .plus,.plus:hover,.node.sel + .plus{opacity:1}
+body.editing .plus{display:none}
+.arw{position:absolute;width:28px;height:22px;display:grid;place-items:center;font-size:13px;
+     color:var(--ai);background:var(--paper);border:1px solid var(--line);cursor:pointer;z-index:3}
+.arw:first-of-type{border-radius:4px 4px 0 0}
+.arw:hover{background:var(--ai);color:#fff;border-color:var(--ai)}
+.arw.off{opacity:.25;cursor:default}
+.arw.off:hover{background:var(--paper);color:var(--ai);border-color:var(--line)}
+body.editing .arw{display:none}
+
+footer{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);
+       padding:6px 18px;font-size:12px;color:#77776f;display:flex;gap:22px}
+footer b{color:var(--sumi)}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="t">保存ルール　枝を生やす</span>
+  <span class="h"><b>Tab</b> 枝を伸ばす　<b>Enter</b> 隣に生やす　<b>↑↓</b> 順番を入れ替え<b>F2</b> 名前　<b>Del</b> 切る　<b>Ctrl+Z</b> 戻す</span>
+  <span class="sp"></span>
+  <button id="fit">全体を見る</button>
+  <button id="ex">.txt で保存</button>
+  <button id="clr">最初から</button>
+</header>
+
+<div id="stage">
+  <div id="world">
+    <svg id="wires"></svg>
+    <div id="nodes"></div>
+  </div>
+</div>
+
+<footer><span id="s1"></span><span id="s2"></span><span>形を決めるだけ。ファイルは一切動かさん</span></footer>
+
+<script>
+const ROW = 46, COL = 236;
+let uid = 1, sel = null, undo = [], views = [];
+let tree = load() || { id: "r", name: "Z（本置き場）", kids: [] };
+
+function load() { try { return JSON.parse(localStorage.getItem("eda")) } catch { return null } }
+function save() { localStorage.setItem("eda", JSON.stringify(tree)); }
+function snap() { undo.push(JSON.stringify(tree)); if (undo.length > 60) undo.shift(); }
+
+const find = (id, n = tree) => n.id === id ? n : n.kids.reduce((a, k) => a || find(id, k), null);
+const parentOf = (id, n = tree) => n.kids.some(k => k.id === id) ? n : n.kids.reduce((a, k) => a || parentOf(id, k), null);
+const count = n => n.kids.reduce((a, k) => a + 1 + count(k), 0);
+
+/* ---- 配置 ---- */
+function layout() {
+  let y = 0;
+  const walk = (n, d) => {
+    n.x = 30 + d * COL;
+    if (!n.kids.length) { n.y = y; y += ROW; }
+    else {
+      n.kids.forEach(k => walk(k, d + 1));
+      n.y = (n.kids[0].y + n.kids[n.kids.length - 1].y) / 2;
+    }
+  };
+  walk(tree, 0);
+}
+
+/* ---- 描画 ---- */
+function render(grownId) {
+  layout();
+  const nodes = document.getElementById("nodes"), wires = document.getElementById("wires");
+  nodes.innerHTML = ""; wires.innerHTML = ""; views = [];
+
+  const draw = n => {
+    const el = document.createElement("div");
+    el.className = "node" + (n.id === "r" ? " root" : "") + (sel === n.id ? " sel" : "") + (n.id === grownId ? " pop" : "");
+    el.style.left = n.x + "px"; el.style.top = n.y + "px";
+    const c = n.kids.length ? `<span class="cnt">${n.kids.length}</span>` : "";
+    el.innerHTML = `<span class="lb"></span>${c}`;
+    el.querySelector(".lb").textContent = n.name;
+    el.onclick = e => { e.stopPropagation(); if (moved) return; sel = n.id; render(); };
+    el.ondblclick = e => { e.stopPropagation(); sel = n.id; rename(); };
+    nodes.appendChild(el);
+    views.push({ n, el });
+
+    if (sel === n.id && n.id !== "r") {
+      const p = parentOf(n.id), i = p.kids.findIndex(k => k.id === n.id);
+      [["▲", -1, i > 0], ["▼", 1, i < p.kids.length - 1]].forEach(([t, dir, ok], j) => {
+        const b = document.createElement("div");
+        b.className = "arw" + (ok ? "" : " off");
+        b.textContent = t;
+        b.style.left = (n.x - 34) + "px";
+        b.style.top = (n.y - 5 + (j ? 22 : 0)) + "px";
+        if (ok) b.onclick = e => { e.stopPropagation(); moveSib(dir); };
+        nodes.appendChild(b);
+      });
+    }
+
+    const p = document.createElement("div");
+    p.className = "plus";
+    p.textContent = "＋";
+    p.style.left = (n.x + el.offsetWidth + 8) + "px";
+    p.style.top = (n.y + 6) + "px";
+    p.onclick = e => { e.stopPropagation(); sel = n.id; addChild(); };
+    nodes.appendChild(p);
+
+    n.kids.forEach(k => {
+      const x1 = n.x + el.offsetWidth, y1 = n.y + 17, x2 = k.x, y2 = k.y + 17, mx = (x1 + x2) / 2;
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`);
+      if (k.id === grownId) path.setAttribute("class", "grow");
+      wires.appendChild(path);
+      draw(k);
+    });
+  };
+  draw(tree);
+
+  document.getElementById("s1").innerHTML = `フォルダー <b>${count(tree)}</b>個`;
+  const deep = (n, d = 0) => n.kids.length ? Math.max(...n.kids.map(k => deep(k, d + 1))) : d;
+  document.getElementById("s2").innerHTML = `深さ <b>${deep(tree)}</b>段`;
+  save();
+}
+
+/* ---- 操作 ---- */
+function addChild() {
+  const n = find(sel || "r"); if (!n) return;
+  snap();
+  const k = { id: "n" + (uid++) + Date.now().toString(36), name: "", kids: [] };
+  n.kids.push(k); sel = k.id;
+  render(k.id); rename(true);
+}
+function addSibling() {
+  if (!sel || sel === "r") return addChild();
+  const p = parentOf(sel); if (!p) return;
+  snap();
+  const k = { id: "n" + (uid++) + Date.now().toString(36), name: "", kids: [] };
+  p.kids.splice(p.kids.findIndex(x => x.id === sel) + 1, 0, k);
+  sel = k.id; render(k.id); rename(true);
+}
+function rename(isNew) {
+  const n = find(sel); if (!n) return;
+  const el = [...document.querySelectorAll(".node")].find(e => e.querySelector(".lb")?.textContent === n.name && e.style.left === n.x + "px" && e.style.top === n.y + "px");
+  if (!el) return;
+  const lb = el.querySelector(".lb");
+  const inp = document.createElement("input");
+  inp.value = n.name; lb.replaceWith(inp); inp.focus(); inp.select();
+  document.body.classList.add("editing");
+  const fin = ok => {
+    document.body.classList.remove("editing");
+    const v = inp.value.trim();
+    if (ok && v) { if (!isNew) snap(); n.name = v; }
+    else if (isNew) { const p = parentOf(n.id); if (p) { p.kids = p.kids.filter(k => k.id !== n.id); sel = p.id; } }
+    render();
+  };
+  inp.onblur = () => fin(true);
+  inp.onkeydown = e => {
+    e.stopPropagation();
+    if (e.key === "Enter") { inp.onblur = null; fin(true); setTimeout(addSibling, 0); }
+    else if (e.key === "Tab") { e.preventDefault(); inp.onblur = null; fin(true); setTimeout(addChild, 0); }
+    else if (e.key === "Escape") { inp.onblur = null; fin(false); }
+  };
+}
+function cut() {
+  if (!sel || sel === "r") return;
+  const n = find(sel), p = parentOf(sel);
+  if (count(n) && !confirm(`「${n.name}」と、その先の枝 ${count(n)}個を切る。ええ？`)) return;
+  snap();
+  p.kids = p.kids.filter(k => k.id !== sel);
+  sel = p.id; render();
+}
+function undoIt() {
+  if (!undo.length) return;
+  tree = JSON.parse(undo.pop()); render();
+}
+
+/* ---- 並べ替え ---- */
+let moved = false;
+function moveSib(dir) {
+  if (!sel || sel === "r") return;
+  const p = parentOf(sel), i = p.kids.findIndex(k => k.id === sel), j = i + dir;
+  if (j < 0 || j >= p.kids.length) return;
+  snap();
+  [p.kids[i], p.kids[j]] = [p.kids[j], p.kids[i]];
+  render();
+}
+
+/* ---- 表示 ---- */
+let sc = 1, ox = 0, oy = 0;
+const world = document.getElementById("world"), stage = document.getElementById("stage");
+const apply = () => world.style.transform = `translate(${ox}px,${oy}px) scale(${sc})`;
+stage.onmousedown = e => {
+  if (e.target.closest(".node,.plus")) return;
+  sel = null; render();
+  const sx = e.clientX - ox, sy = e.clientY - oy;
+  stage.classList.add("drag");
+  const mv = m => { ox = m.clientX - sx; oy = m.clientY - sy; apply(); };
+  const up = () => { stage.classList.remove("drag"); removeEventListener("mousemove", mv); removeEventListener("mouseup", up); };
+  addEventListener("mousemove", mv); addEventListener("mouseup", up);
+};
+stage.onwheel = e => {
+  e.preventDefault();
+  const k = e.deltaY < 0 ? 1.1 : 1 / 1.1, nx = Math.min(2, Math.max(.35, sc * k));
+  ox = e.clientX - (e.clientX - ox) * (nx / sc); oy = e.clientY - (e.clientY - oy) * (nx / sc);
+  sc = nx; apply();
+};
+function fit() {
+  layout();
+  let maxX = 0, maxY = 0;
+  const w = n => { maxX = Math.max(maxX, n.x + 260); maxY = Math.max(maxY, n.y + 60); n.kids.forEach(w); };
+  w(tree);
+  sc = Math.min(1, (stage.clientWidth - 40) / maxX, (stage.clientHeight - 40) / maxY);
+  ox = 20; oy = 20; apply();
+}
+
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === "Tab") { e.preventDefault(); addChild(); }
+  else if (e.key === "Enter") { e.preventDefault(); addSibling(); }
+  else if (e.key === "F2") rename();
+  else if (e.key === "ArrowUp") { e.preventDefault(); moveSib(-1); }
+  else if (e.key === "ArrowDown") { e.preventDefault(); moveSib(1); }
+  else if (e.key === "Delete" || e.key === "Backspace") cut();
+  else if (e.ctrlKey && e.key.toLowerCase() === "z") undoIt();
+});
+document.getElementById("fit").onclick = fit;
+document.getElementById("clr").onclick = () => {
+  if (!confirm("枝を全部落として最初から。ええ？")) return;
+  snap(); tree = { id: "r", name: "Z（本置き場）", kids: [] }; sel = null; render();
+};
+document.getElementById("ex").onclick = () => {
+  const out = [];
+  const w = (n, ind, last, top) => {
+    out.push(top ? n.name : ind + (last ? "└─ " : "├─ ") + n.name);
+    const ni = top ? "" : ind + (last ? "   " : "│  ");
+    n.kids.forEach((k, i) => w(k, ni, i === n.kids.length - 1, false));
+  };
+  w(tree, "", true, true);
+  const b = new Blob(["﻿" + out.join("\r\n")], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(b); a.download = "保存ルール_ツリー.txt"; a.click();
+};
+
+render(); fit();
+if (!tree.kids.length) { sel = "r"; render(); }
+</script>
+</body>
+</html>
