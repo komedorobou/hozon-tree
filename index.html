@@ -25,7 +25,10 @@ header button:hover{background:#ffffff1a}
 #side h2{margin:0;padding:9px 14px;font-size:12px;letter-spacing:.1em;color:#55554f;
          border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
 #side h2 .n{margin-left:auto;font-weight:400;color:#98968e;font-size:11px}
-#side .list{flex:1;overflow:auto;padding:4px 0}
+#side .list{flex:1;overflow:auto;padding:4px 0;min-height:80px}
+#side #zList{flex:0 0 38%;border-top:1px solid var(--line)}
+#side #zHead{border-top:1px solid var(--line)}
+#side .zpath{padding:2px 14px 6px;font-size:11px;color:#a5a39b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #side .it{display:flex;align-items:center;gap:6px;padding:4px 12px;font-size:13px;white-space:nowrap}
 #side .it:hover{background:#f0f1ec}
 #side .it .nm{overflow:hidden;text-overflow:ellipsis;flex:1}
@@ -105,6 +108,8 @@ footer b{color:var(--sumi)}
   <h2>🖥 いまのデスクトップ<span class="n" id="dtCount"></span></h2>
   <div class="list" id="dtList"></div>
   <div class="foot" id="dtFoot">読み込み中…</div>
+  <h2 id="zHead">📂 枝の中身<span class="n" id="zCount"></span></h2>
+  <div class="list" id="zList"><div class="dead">枝をクリックしたら、その中に何が入ってるか出る</div></div>
 </aside>
 
 <footer><span id="s1"></span><span id="s2"></span><span>形を決めるだけ。ファイルは一切動かさん</span></footer>
@@ -195,7 +200,7 @@ function render(grownId) {
     const c = n.kids.length ? `<span class="cnt">${n.kids.length}</span>` : "";
     el.innerHTML = `<span class="lb"></span>${c}`;
     el.querySelector(".lb").textContent = n.name;
-    el.onclick = e => { e.stopPropagation(); if (moved) return; sel = n.id; render(); };
+    el.onclick = e => { e.stopPropagation(); if (moved) return; sel = n.id; render(); if (typeof showBranch === "function") showBranch(n.id); };
     el.ondblclick = e => { e.stopPropagation(); sel = n.id; rename(); };
     el.onmousedown = e => { e.stopPropagation(); if (n.id !== "r") startDrag(n, el, e); };
     // 右のデスクトップ一覧からのドロップを受ける
@@ -660,6 +665,76 @@ function renderRows() {
     `${dtTop.length}個（ショートカット${links} / 実体${dtTop.length - links}）`;
 }
 
+/* ---- 枝の中身（Zに実際に入ってる物） ---- */
+let zOpen = new Set(), zKids = {}, zCur = null;
+
+async function zLoad(rel) {                       // rel: "Z" or "Z\\組織\\役員選挙"
+  if (zKids[rel]) return zKids[rel];
+  const r = await fetch(HELPER + "/api/list?path=" + encodeURIComponent(rel) + "&t=" + Math.random());
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  zKids[rel] = j.entries.map(e => ({
+    name: e.name, rel: rel + "\\" + e.name, dir: e.dir, mtime: (e.mtime || "").slice(0, 10)
+  }));
+  return zKids[rel];
+}
+
+async function showBranch(nodeId) {
+  const path = pathOf(nodeId);
+  const rel = ["Z"].concat(path).join("\\");
+  zCur = rel; zOpen = new Set(); zKids = {};
+  const box = document.getElementById("zList");
+  document.getElementById("zCount").textContent = "";
+  if (mode !== "helper") { box.innerHTML = `<div class="dead">このPCでは中身を見れん（読み役がおらん）</div>`; return; }
+  box.innerHTML = `<div class="dead">読んでる…</div>`;
+  try {
+    await zLoad(rel);
+    zRender();
+  } catch (e) {
+    box.innerHTML = `<div class="dead">Zにまだこのフォルダーは無い<br><span style="font-size:11px">${rel}</span></div>`;
+  }
+}
+
+function zRender() {
+  const box = document.getElementById("zList");
+  box.innerHTML = "";
+  const head = document.createElement("div");
+  head.className = "zpath";
+  head.textContent = zCur.replace(/^Z/, "Z:");
+  box.appendChild(head);
+
+  const rows = [];
+  const walk = (rel, depth) => {
+    (zKids[rel] || []).forEach(e => {
+      rows.push({ ...e, depth });
+      if (e.dir && zOpen.has(e.rel)) walk(e.rel, depth + 1);
+    });
+  };
+  walk(zCur, 0);
+
+  if (!rows.length) box.appendChild(Object.assign(document.createElement("div"),
+    { className: "dead", textContent: "空っぽ" }));
+
+  rows.forEach(e => {
+    const el = document.createElement("div");
+    el.className = "it " + dtKind(e);
+    el.style.paddingLeft = (12 + e.depth * 14) + "px";
+    el.innerHTML = `<span class="tw">${e.dir ? (zOpen.has(e.rel) ? "▾" : "▸") : ""}</span>` +
+                   `<span>${dtIcon(e)}</span><span class="nm"></span><span class="mt">${e.mtime}</span>`;
+    el.querySelector(".nm").textContent = e.name;
+    el.title = e.rel.replace(/^Z/, "Z:");
+    if (e.dir) el.querySelector(".tw").onclick = async ev => {
+      ev.stopPropagation();
+      if (zOpen.has(e.rel)) zOpen.delete(e.rel);
+      else { try { await zLoad(e.rel); zOpen.add(e.rel); } catch (x) { } }
+      zRender();
+    };
+    el.ondblclick = () => fetch(HELPER + "/api/open?path=" + encodeURIComponent(e.rel)).catch(() => { });
+    box.appendChild(el);
+  });
+  document.getElementById("zCount").textContent = (zKids[zCur] || []).length + "個";
+}
+
 /* 写し・フォルダ選択方式から呼ばれる用（開閉なし） */
 function drawDesktop(items) {
   dtTop = items.map(e => ({ ...e, rel: e.name }));
@@ -716,6 +791,7 @@ async function stow(name, nodeId) {
       const j = await r.json();
       if (j.error) { alert("入らんかった：" + j.error); return; }
       foot(`「${name}」を ${where} へ入れた`);
+      zKids = {}; if (sel) showBranch(sel);
     } catch (e) { alert("読み役が落ちてる。PCを再起動するか、Z:\\_ツール\\seiri\\起動.bat を実行して。"); }
     listDesktop(); return;
   }
