@@ -168,15 +168,7 @@
     {
      "id": "n17ms8flv8d",
      "name": "教育・宣伝部",
-     "kids": [
-      {
-       "id": "n1ms8fz7nr",
-       "name": "aaaaaaaa",
-       "kids": [],
-       "x": 738,
-       "y": 782
-      }
-     ],
+     "kids": [],
      "x": 502,
      "y": 782
     }
