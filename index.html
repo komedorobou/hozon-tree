@@ -452,7 +452,7 @@ async function pollDesktop() {
     const d = await r.json();
     const sig = d.items.map(i => i.name + i.mtime).join("|");
     if (sig !== dtSig) { dtSig = sig; drawDesktop(d); }
-    document.getElementById("dtFoot").textContent = "自動で最新にしてる（3秒ごと）";
+    document.getElementById("dtFoot").textContent = "最新にする時は F5";
   } catch (e) {
     dtSig = "";
     document.getElementById("dtCount").textContent = "";
@@ -477,7 +477,7 @@ function drawDesktop(d) {
   document.getElementById("dtCount").textContent =
     `${d.total}個（ショートカット${d.links} / 実体${d.total - d.links}）`;
 }
-pollDesktop(); setInterval(pollDesktop, 3000);
+pollDesktop();
 
 render(); fit(); syncLabel();
 if (!tree.kids.length) { sel = "r"; render(); }
