@@ -50,13 +50,6 @@
    "kind": "フォルダー"
   },
   {
-   "name": "_中身テスト",
-   "dir": true,
-   "size": 0,
-   "mtime": "2026/07/31 16:20",
-   "kind": "フォルダー"
-  },
-  {
    "name": "きたｍｔ",
    "dir": true,
    "size": 0,
@@ -220,8 +213,8 @@
   {
    "name": "xxxxxxxxxxxxxxxxxxxx.xlsx",
    "dir": false,
-   "size": 134503,
-   "mtime": "2026/07/31 13:21",
+   "size": 134453,
+   "mtime": "2026/07/31 16:21",
    "kind": "Excel"
   },
   {
@@ -568,7 +561,7 @@
    "kind": "Excel"
   }
  ],
- "total": 81,
+ "total": 80,
  "links": 21,
- "at": "2026/07/31 16:20"
+ "at": "2026/07/31 16:22"
 }
