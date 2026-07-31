@@ -232,13 +232,6 @@
    "kind": "Word"
   },
   {
-   "name": "~$残セット様.doc",
-   "dir": false,
-   "size": 162,
-   "mtime": "2023/03/03 15:12",
-   "kind": "Word"
-  },
-  {
    "name": "●組合・労金給与引入力表用職員リストR8.xlsx",
    "dir": false,
    "size": 257815,
@@ -470,7 +463,7 @@
    "kind": "Excel"
   }
  ],
- "total": 67,
+ "total": 66,
  "links": 18,
  "at": "2026/07/31 17:40"
 }
