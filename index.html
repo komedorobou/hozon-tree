@@ -660,6 +660,11 @@ function renderRows() {
     el.querySelector(".nm").textContent = e.name;
     el.title = e.rel + (e.dir ? "\n▸ を押すと中が見える" : "") + "\n枝にドラッグしたらZへ入る";
     if (e.dir) el.querySelector(".tw").onclick = ev => { ev.stopPropagation(); toggleDir(e.rel); };
+    el.ondblclick = () => {
+      if (e.dir) toggleDir(e.rel);
+      else if (mode === "helper")
+        fetch(HELPER + "/api/open?path=" + encodeURIComponent("デスクトップ\\" + e.rel)).catch(() => { });
+    };
     el.draggable = true;
     el.ondragstart = ev => {
       ev.dataTransfer.setData("text/plain", "dt:" + e.rel);
@@ -736,7 +741,13 @@ function zRender() {
       else { try { await zLoad(e.rel); zOpen.add(e.rel); } catch (x) { } }
       zRender();
     };
-    el.ondblclick = () => fetch(HELPER + "/api/open?path=" + encodeURIComponent(e.rel)).catch(() => { });
+    el.ondblclick = async () => {
+      if (e.dir) {
+        if (zOpen.has(e.rel)) zOpen.delete(e.rel);
+        else { try { await zLoad(e.rel); zOpen.add(e.rel); } catch (x) { } }
+        zRender();
+      } else fetch(HELPER + "/api/open?path=" + encodeURIComponent(e.rel)).catch(() => { });
+    };
     box.appendChild(el);
   });
   document.getElementById("zCount").textContent = (zKids[zCur] || []).length + "個";
