@@ -204,13 +204,6 @@
    "kind": "Excel"
   },
   {
-   "name": "~$2022能勢もち.xlsx",
-   "dir": false,
-   "size": 165,
-   "mtime": "2022/12/21 10:01",
-   "kind": "Excel"
-  },
-  {
    "name": "~$23.2.27.docx",
    "dir": false,
    "size": 162,
@@ -498,7 +491,7 @@
    "kind": "Excel"
   }
  ],
- "total": 71,
+ "total": 70,
  "links": 18,
  "at": "2026/07/31 17:39"
 }
