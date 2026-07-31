@@ -39,11 +39,11 @@ path.grow{stroke-dasharray:400;stroke-dashoffset:400;animation:draw .45s ease-ou
 .node.root .cnt{color:#ffffff8c}
 .node input{font:inherit;border:none;outline:none;background:transparent;color:inherit;width:9em}
 
-.plus{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--paper);
-      border:1px solid var(--line);color:var(--ai);display:grid;place-items:center;font-size:15px;
-      line-height:1;cursor:pointer;opacity:0;transition:.12s}
-.plus:hover{background:var(--ai);color:#fff;border-color:var(--ai)}
-.node:hover + .plus,.plus:hover,.node.sel + .plus{opacity:1}
+.plus{position:absolute;width:26px;height:26px;border-radius:50%;background:var(--paper);
+      border:1px solid var(--line);color:var(--ai);display:grid;place-items:center;font-size:16px;
+      line-height:1;cursor:pointer;opacity:.28;transition:.12s;z-index:3}
+.plus:hover{background:var(--ai);color:#fff;border-color:var(--ai);opacity:1}
+.plus.on{opacity:1;border-color:var(--ai)}
 body.editing .plus{display:none}
 .arw{position:absolute;width:28px;height:22px;display:grid;place-items:center;font-size:13px;
      color:var(--ai);background:var(--paper);border:1px solid var(--line);cursor:pointer;z-index:3}
@@ -123,6 +123,14 @@ function render(grownId) {
     nodes.appendChild(el);
     views.push({ n, el });
 
+    const p = document.createElement("div");
+    p.className = "plus" + (sel === n.id ? " on" : "");
+    p.textContent = "＋";
+    p.style.left = (n.x + el.offsetWidth + 4) + "px";
+    p.style.top = (n.y + 4) + "px";
+    p.onclick = e => { e.stopPropagation(); sel = n.id; addChild(); };
+    nodes.appendChild(p);
+
     if (sel === n.id && n.id !== "r") {
       const p = parentOf(n.id), i = p.kids.findIndex(k => k.id === n.id);
       [["▲", -1, i > 0], ["▼", 1, i < p.kids.length - 1]].forEach(([t, dir, ok], j) => {
@@ -135,14 +143,6 @@ function render(grownId) {
         nodes.appendChild(b);
       });
     }
-
-    const p = document.createElement("div");
-    p.className = "plus";
-    p.textContent = "＋";
-    p.style.left = (n.x + el.offsetWidth + 8) + "px";
-    p.style.top = (n.y + 6) + "px";
-    p.onclick = e => { e.stopPropagation(); sel = n.id; addChild(); };
-    nodes.appendChild(p);
 
     n.kids.forEach(k => {
       const x1 = n.x + el.offsetWidth, y1 = n.y + 17, x2 = k.x, y2 = k.y + 17, mx = (x1 + x2) / 2;
