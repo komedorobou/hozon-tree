@@ -232,13 +232,6 @@
    "kind": "Word"
   },
   {
-   "name": "~$伊藤ハムファイターズ2022冬.xlsx",
-   "dir": false,
-   "size": 165,
-   "mtime": "2022/12/28 09:14",
-   "kind": "Excel"
-  },
-  {
    "name": "~$残セット様.doc",
    "dir": false,
    "size": 162,
@@ -477,7 +470,7 @@
    "kind": "Excel"
   }
  ],
- "total": 68,
+ "total": 67,
  "links": 18,
  "at": "2026/07/31 17:40"
 }
