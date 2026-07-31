@@ -19,7 +19,22 @@ header button{font:inherit;font-size:13px;padding:5px 13px;border:1px solid #fff
               color:#fff;border-radius:4px;cursor:pointer}
 header button:hover{background:#ffffff1a}
 
-#stage{position:absolute;inset:44px 0 0 0;overflow:hidden;cursor:grab}
+#stage{position:absolute;inset:44px 300px 0 0;overflow:hidden;cursor:grab}
+#side{position:fixed;top:44px;right:0;bottom:0;width:300px;background:var(--paper);
+      border-left:1px solid var(--line);display:flex;flex-direction:column;z-index:8}
+#side h2{margin:0;padding:9px 14px;font-size:12px;letter-spacing:.1em;color:#55554f;
+         border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+#side h2 .n{margin-left:auto;font-weight:400;color:#98968e;font-size:11px}
+#side .list{flex:1;overflow:auto;padding:4px 0}
+#side .it{display:flex;align-items:center;gap:8px;padding:4px 12px;font-size:13px;white-space:nowrap}
+#side .it:hover{background:#f0f1ec}
+#side .it .nm{overflow:hidden;text-overflow:ellipsis;flex:1}
+#side .it .mt{font-size:10px;color:#a5a39b}
+#side .it.link .nm{color:#6f8fae}
+#side .it.junk .nm{color:#b3aa93;text-decoration:line-through}
+#side .foot{flex:none;border-top:1px solid var(--line);padding:6px 12px;font-size:11px;color:#8a8880}
+#side .dead{padding:16px 14px;font-size:12px;color:#8a8880;line-height:1.8}
+#side .dead b{color:var(--shu)}
 #stage.drag{cursor:grabbing}
 #world{position:absolute;left:0;top:0;transform-origin:0 0}
 svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
@@ -81,6 +96,12 @@ footer b{color:var(--sumi)}
     <div id="nodes"></div>
   </div>
 </div>
+
+<aside id="side">
+  <h2>🖥 いまのデスクトップ<span class="n" id="dtCount"></span></h2>
+  <div class="list" id="dtList"></div>
+  <div class="foot" id="dtFoot">読み込み中…</div>
+</aside>
 
 <footer><span id="s1"></span><span id="s2"></span><span>形を決めるだけ。ファイルは一切動かさん</span></footer>
 
@@ -404,6 +425,59 @@ document.getElementById("ex").onclick = () => {
 
 document.getElementById("cloud").onclick = () => push(true);
 addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---- 右：いまのデスクトップ（このPCの常駐アプリから3秒ごとに取る） ---- */
+const LOCAL = "http://127.0.0.1:8777/api/desktop";
+let dtSig = "";
+const dtIcon = e => {
+  if (e.dir) return "📁";
+  const x = e.name.toLowerCase();
+  if (/\.(lnk|url)$/.test(x)) return "🔗";
+  if (/\.(xlsx|xls|xlsm)$/.test(x)) return "🟩";
+  if (/\.docx?$/.test(x)) return "🟦";
+  if (/\.pptx?$/.test(x)) return "🟧";
+  if (/\.pdf$/.test(x)) return "🟥";
+  if (/\.(mp4|mov|avi)$/.test(x)) return "🎬";
+  if (/\.(jpe?g|png|gif|bmp)$/.test(x)) return "🖼️";
+  if (/\.(accdb|mdb)$/.test(x)) return "🗄️";
+  if (/\.zip$/.test(x)) return "🗜️";
+  return "📄";
+};
+const dtKind = e => e.name.startsWith("~$") ? "junk"
+  : /\.(lnk|url)$/i.test(e.name) ? "link" : e.dir ? "dir" : "file";
+
+async function pollDesktop() {
+  try {
+    const r = await fetch(LOCAL + "?t=" + Math.random());
+    const d = await r.json();
+    const sig = d.items.map(i => i.name + i.mtime).join("|");
+    if (sig !== dtSig) { dtSig = sig; drawDesktop(d); }
+    document.getElementById("dtFoot").textContent = "自動で最新にしてる（3秒ごと）";
+  } catch (e) {
+    dtSig = "";
+    document.getElementById("dtCount").textContent = "";
+    document.getElementById("dtList").innerHTML =
+      `<div class="dead"><b>つながらん</b><br>このPCで「デスクトップ取得」を動かして。<br>
+       デスクトップの <b>デスクトップ取得.bat</b> をダブルクリック。<br>
+       （立ち上げたら勝手にここに出る）</div>`;
+    document.getElementById("dtFoot").textContent = "停止中";
+  }
+}
+function drawDesktop(d) {
+  const list = document.getElementById("dtList");
+  list.innerHTML = "";
+  d.items.forEach(e => {
+    const el = document.createElement("div");
+    el.className = "it " + dtKind(e);
+    el.innerHTML = `<span>${dtIcon(e)}</span><span class="nm"></span><span class="mt">${e.mtime.slice(0, 10)}</span>`;
+    el.querySelector(".nm").textContent = e.name;
+    el.title = e.name + "　" + e.kind;
+    list.appendChild(el);
+  });
+  document.getElementById("dtCount").textContent =
+    `${d.total}個（ショートカット${d.links} / 実体${d.total - d.links}）`;
+}
+pollDesktop(); setInterval(pollDesktop, 3000);
 
 render(); fit(); syncLabel();
 if (!tree.kids.length) { sel = "r"; render(); }
