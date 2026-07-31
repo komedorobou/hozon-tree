@@ -48,6 +48,14 @@ header button:hover{background:#ffffff1a}
 #grip:hover,#grip.on{background:#16324f33}
 .pickbtn{margin:6px 0;padding:7px 14px;border:1px solid var(--ai);background:var(--ai);color:#fff;border-radius:4px;font:inherit;font-size:13px;cursor:pointer}
 .pickbtn:hover{opacity:.88}
+.smenu{position:fixed;z-index:30;background:#fff;border:1px solid var(--line);border-radius:7px;
+       box-shadow:0 8px 22px #00000030;padding:5px;min-width:190px;display:none;font-size:13px}
+.smenu.on{display:block}
+.smenu div{padding:7px 12px;border-radius:5px;cursor:pointer;white-space:nowrap}
+.smenu div:hover{background:#eef2f7}
+.smenu div.dan{color:var(--shu)}
+.smenu hr{border:none;border-top:1px solid var(--line);margin:4px 2px}
+#side .it.pick{background:#dbe6f2}
 #stage.drag{cursor:grabbing}
 #world{position:absolute;left:0;top:0;transform-origin:0 0}
 svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
@@ -109,6 +117,7 @@ footer b{color:var(--sumi)}
   </div>
 </div>
 
+<div id="sideMenu" class="smenu"></div>
 <div id="grip" title="ドラッグで幅を変えられる"></div>
 <aside id="side">
   <h2 id="dtHead"><span class="fold">▾</span>🖥 いまのデスクトップ<span class="n" id="dtCount"></span></h2>
@@ -655,6 +664,7 @@ function renderRows() {
     el.querySelector(".nm").textContent = e.name;
     el.title = e.rel + (e.dir ? "\n▸ を押すと中が見える" : "") + "\n枝にドラッグしたらZへ入る";
     if (e.dir) el.querySelector(".tw").onclick = ev => { ev.stopPropagation(); toggleDir(e.rel); };
+    el.oncontextmenu = ev => sideMenu(ev, e, "dt");
     el.ondblclick = () => {
       if (e.dir) toggleDir(e.rel);
       else if (mode === "helper")
@@ -736,6 +746,7 @@ function zRender() {
       else { try { await zLoad(e.rel); zOpen.add(e.rel); } catch (x) { } }
       zRender();
     };
+    el.oncontextmenu = ev => sideMenu(ev, e, "z");
     el.ondblclick = async () => {
       if (e.dir) {
         if (zOpen.has(e.rel)) zOpen.delete(e.rel);
@@ -883,6 +894,61 @@ applyFold();
   };
   grip.ondblclick = () => setW(300);       // 倍クリックで既定に戻す
 })();
+
+
+/* ---- 右クリックメニュー（開く・名前変更・ゴミ箱） ---- */
+function fullRel(e, where) { return where === "dt" ? ("デスクトップ\\" + e.rel) : e.rel; }
+
+function sideMenu(ev, e, where) {
+  ev.preventDefault(); ev.stopPropagation();
+  if (mode !== "helper") return;
+  const m = document.getElementById("sideMenu");
+  const rel = fullRel(e, where);
+  m.innerHTML =
+    `<div data-a="open">${e.dir ? "エクスプローラーで開く" : "開く"}</div>` +
+    `<div data-a="ren">名前の変更</div>` +
+    `<hr><div data-a="del" class="dan">Z:	rashbox へ移す</div>`;
+  m.classList.add("on");
+  m.style.left = Math.min(ev.clientX, innerWidth - 210) + "px";
+  m.style.top = Math.min(ev.clientY, innerHeight - m.offsetHeight - 10) + "px";
+  m.onclick = async ce => {
+    const a = ce.target.dataset.a;
+    m.classList.remove("on");
+    if (!a) return;
+    if (a === "open") {
+      fetch(HELPER + "/api/open?path=" + encodeURIComponent(rel)).catch(() => { });
+    } else if (a === "ren") {
+      const nn = prompt("新しい名前", e.name);
+      if (!nn || nn === e.name) return;
+      const r = await fetch(HELPER + "/api/rename", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: rel, name: nn })
+      });
+      const j = await r.json();
+      if (j.error) { alert("変えられんかった：" + j.error); return; }
+      refreshPanels(where);
+    } else if (a === "del") {
+      if (!confirm(`「${e.name}」を Z:	rashbox へ移す。ええ？
+（消える訳やない。trashboxから戻せる）`)) return;
+      const r = await fetch(HELPER + "/api/trash", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ srcs: [rel] })
+      });
+      const j = await r.json();
+      if (j.error) { alert("移せんかった：" + j.error); return; }
+      foot(`「${e.name}」を trashbox へ移した`);
+      refreshPanels(where);
+    }
+  };
+}
+addEventListener("click", e => {
+  if (!e.target.closest("#sideMenu")) document.getElementById("sideMenu").classList.remove("on");
+});
+
+function refreshPanels(where) {
+  if (where === "dt") { dtKids = {}; listDesktop(); }
+  else { zKids = {}; if (sel) showBranch(sel); }
+}
 
 render(); fit(); syncLabel();
 if (!tree.kids.length) { sel = "r"; render(); }
