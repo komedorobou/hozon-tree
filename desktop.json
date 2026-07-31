@@ -218,13 +218,6 @@
    "kind": "ショートカット"
   },
   {
-   "name": "_検証2.txt",
-   "dir": false,
-   "size": 1,
-   "mtime": "2026/07/31 15:34",
-   "kind": "テキスト"
-  },
-  {
    "name": "fax.lnk",
    "dir": false,
    "size": 581,
@@ -603,7 +596,7 @@
    "kind": "Excel"
   }
  ],
- "total": 86,
+ "total": 85,
  "links": 21,
  "at": "2026/07/31 15:35"
 }
