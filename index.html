@@ -91,15 +91,25 @@ let tree = load() || { id: "r", name: "Z（本置き場）", kids: [] };
 
 function load() { try { return JSON.parse(localStorage.getItem("eda")) } catch { return null } }
 function save() { localStorage.setItem("eda", JSON.stringify(tree)); }
-function touch() { dirty = true; syncLabel(); }
+function touch() { dirty = true; syncLabel(); autoPush(); }
+
+let autoT;
+function autoPush() {
+  if (!localStorage.getItem("ght")) return;   // 鍵が無いうちはこのPCの中だけ
+  clearTimeout(autoT);
+  autoT = setTimeout(() => push(true), 1200);
+}
 
 /* ---- GitHub に置く（このPCだけやなく、どのPCからでも同じ形） ---- */
 const REPO = "komedorobou/hozon-tree", FILE = "data.json";
 let sha = null, dirty = false, pulling = true;
 
+let saving = false;
 const syncLabel = () => {
   document.getElementById("sync").textContent =
-    pulling ? "読み込み中…" : dirty ? "未保存" : "保存済み";
+    pulling ? "読み込み中…" : saving ? "保存中…"
+    : dirty ? (localStorage.getItem("ght") ? "未保存" : "このPCだけに保存中（鍵を貼ればみんなの分に）")
+    : "保存済み";
 };
 
 async function pull() {
@@ -126,24 +136,33 @@ function token() {
   return localStorage.getItem("ght");
 }
 
-async function push() {
-  const t = token(); if (!t) return;
-  const body = {
-    message: "ツリー更新",
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(tree, null, 1)))),
-    ...(sha ? { sha } : {})
-  };
-  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
+async function push(auto, retry) {
+  const t = auto ? localStorage.getItem("ght") : token();
+  if (!t) return;
+  saving = true; syncLabel();
+  const send = () => fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
     method: "PUT",
     headers: { Authorization: "Bearer " + t, Accept: "application/vnd.github+json" },
-    body: JSON.stringify(body)
+    body: JSON.stringify({
+      message: "ツリー更新",
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(tree, null, 1)))),
+      ...(sha ? { sha } : {})
+    })
   });
+  let r = await send();
+  if ((r.status === 409 || r.status === 422) && !retry) {   // 別PCが先に保存した時
+    const g = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}?t=` + Math.random());
+    if (g.ok) sha = (await g.json()).sha;
+    r = await send();
+  }
+  saving = false;
   if (r.status === 401 || r.status === 403) {
     localStorage.removeItem("ght");
-    alert("鍵がはねられた。もう一回「保存」を押して、新しい鍵を貼って。");
+    syncLabel();
+    if (!auto) alert("鍵がはねられた。もう一回「保存」を押して、新しい鍵を貼って。");
     return;
   }
-  if (!r.ok) { alert("保存でけへんかった：" + r.status + " " + (await r.text()).slice(0, 200)); return; }
+  if (!r.ok) { syncLabel(); if (!auto) alert("保存でけへんかった：" + r.status); return; }
   sha = (await r.json()).content.sha;
   dirty = false; syncLabel();
 }
@@ -409,7 +428,7 @@ document.getElementById("ex").onclick = () => {
   a.href = URL.createObjectURL(b); a.download = "保存ルール_ツリー.txt"; a.click();
 };
 
-document.getElementById("cloud").onclick = push;
+document.getElementById("cloud").onclick = () => push(false);
 addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
 
 render(); fit(); syncLabel();
