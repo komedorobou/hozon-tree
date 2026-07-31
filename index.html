@@ -194,6 +194,14 @@ function render(grownId) {
     el.onclick = e => { e.stopPropagation(); if (moved) return; sel = n.id; render(); };
     el.ondblclick = e => { e.stopPropagation(); sel = n.id; rename(); };
     el.onmousedown = e => { e.stopPropagation(); if (n.id !== "r") startDrag(n, el, e); };
+    // 右のデスクトップ一覧からのドロップを受ける
+    el.ondragover = ev => { ev.preventDefault(); el.classList.add("tgt"); };
+    el.ondragleave = () => el.classList.remove("tgt");
+    el.ondrop = ev => {
+      ev.preventDefault(); el.classList.remove("tgt");
+      const d = ev.dataTransfer.getData("text/plain") || "";
+      if (d.startsWith("dt:")) stow(d.slice(3), n.id);
+    };
     nodes.appendChild(el);
     views.push({ n, el });
 
@@ -428,7 +436,39 @@ addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.retur
 
 /* ---- 右：いまのデスクトップ（このPCの常駐アプリから3秒ごとに取る） ---- */
 const LOCAL = "http://127.0.0.1:8777/api/desktop";
-let dtSig = "";
+const LOCAL_STOW = "http://127.0.0.1:8777/api/stow";
+let dtSig = "", localLive = false;
+
+/* 枝の道順（根＝Z直下なので根の名前は含めん） */
+function pathOf(id) {
+  const walk = (nodes, trail) => {
+    for (const n of nodes) {
+      const t = trail.concat(n.name);
+      if (n.id === id) return t;
+      const r = walk(n.kids, t);
+      if (r) return r;
+    }
+    return null;
+  };
+  return id === "r" ? [] : (walk(tree.kids, []) || []);
+}
+
+/* デスクトップの物を枝へ入れる（実際に動く） */
+async function stow(name, nodeId) {
+  const path = pathOf(nodeId);
+  const where = "Z:\\" + path.join("\\");
+  if (!confirm(`「${name}」を\n${where}\nへ移す。ええ？`)) return;
+  try {
+    const r = await fetch(LOCAL_STOW, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, path })
+    });
+    const j = await r.json();
+    if (j.error) { alert("入らんかった：" + j.error); return; }
+    document.getElementById("dtFoot").textContent = `「${name}」を ${where} へ入れた`;
+    pollDesktop();
+  } catch (e) { alert("読み役につながらん。デスクトップ取得.bat を動かして。"); }
+}
 const dtIcon = e => {
   if (e.dir) return "📁";
   const x = e.name.toLowerCase();
@@ -457,8 +497,9 @@ async function pollDesktop() {
   try {
     const r = await fetch(LOCAL + "?t=" + Math.random());
     const d = await r.json();
+    localLive = true;
     drawDesktop(d);
-    document.getElementById("dtFoot").textContent = "このPCから直読み中　F5で最新に";
+    document.getElementById("dtFoot").textContent = "枝にドラッグしたら、そこへ入る";
     // 他のPCでも見られるようにクラウドへ写しを置く
     fetch(API + "?kind=desktop", {
       method: "PUT", headers: { "Content-Type": "application/json" },
@@ -491,7 +532,14 @@ function drawDesktop(d) {
     el.className = "it " + dtKind(e);
     el.innerHTML = `<span>${dtIcon(e)}</span><span class="nm"></span><span class="mt">${e.mtime.slice(0, 10)}</span>`;
     el.querySelector(".nm").textContent = e.name;
-    el.title = e.name + "　" + e.kind;
+    el.title = e.name + "　" + e.kind + "\n枝にドラッグしたら、そこへ入る";
+    if (localLive) {
+      el.draggable = true;
+      el.ondragstart = ev => {
+        ev.dataTransfer.setData("text/plain", "dt:" + e.name);
+        ev.dataTransfer.effectAllowed = "move";
+      };
+    }
     list.appendChild(el);
   });
   document.getElementById("dtCount").textContent =
