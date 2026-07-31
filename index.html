@@ -29,7 +29,9 @@ header button:hover{background:#ffffff1a}
 #side h2:hover{background:#f0f1ec}
 #side h2 .fold{width:12px;font-size:10px;color:#8a8880}
 #side .list{flex:1;overflow:auto;padding:4px 0;min-height:80px}
-#side #zList{flex:0 0 38%;border-top:1px solid var(--line)}
+#side #zList{flex:0 0 26%;border-top:1px solid var(--line)}
+#side #zrList{flex:0 0 30%;border-top:1px solid var(--line)}
+#side #zrHead{border-top:1px solid var(--line)}
 #side #zHead{border-top:1px solid var(--line)}
 #side .zpath{padding:2px 14px 6px;font-size:11px;color:#a5a39b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #side .it{display:flex;align-items:center;gap:6px;padding:4px 12px;font-size:13px;white-space:nowrap}
@@ -125,6 +127,8 @@ footer b{color:var(--sumi)}
   <div class="foot" id="dtFoot">読み込み中…</div>
   <h2 id="zHead"><span class="fold">▾</span>📂 枝の中身<span class="n" id="zCount"></span></h2>
   <div class="list" id="zList"><div class="dead">枝をクリックしたら、その中に何が入ってるか出る</div></div>
+  <h2 id="zrHead"><span class="fold">▾</span>🗄 Zの中身<span class="n" id="zrCount"></span></h2>
+  <div class="list" id="zrList"></div>
 </aside>
 
 <footer><span id="s1"></span><span id="s2"></span><span>形を決めるだけ。ファイルは一切動かさん</span></footer>
@@ -225,6 +229,7 @@ function render(grownId) {
       ev.preventDefault(); el.classList.remove("tgt");
       const d = ev.dataTransfer.getData("text/plain") || "";
       if (d.startsWith("dt:")) stow(d.slice(3), n.id);
+      else if (d.startsWith("z:")) moveInZ(d.slice(2), n.id);
     };
     nodes.appendChild(el);
     views.push({ n, el });
@@ -815,7 +820,7 @@ async function stow(name, nodeId) {
       const j = await r.json();
       if (j.error) { alert("入らんかった：" + j.error); return; }
       foot(`「${name}」を ${where} へ入れた`);
-      zKids = {}; if (sel) showBranch(sel);
+      zKids = {}; zrKids = {}; if (sel) showBranch(sel); zrShow();
     } catch (e) { alert("読み役が落ちてる。PCを再起動するか、Z:\\_ツール\\seiri\\起動.bat を実行して。"); }
     listDesktop(); return;
   }
@@ -846,6 +851,7 @@ async function stow(name, nodeId) {
 }
 
 listDesktop();
+setTimeout(() => { if (typeof zrShow === "function") zrShow(); }, 300);
 
 
 
@@ -854,6 +860,9 @@ listDesktop();
 function applyFold() {
   const dtOff = localStorage.getItem("fold-dt") === "1";
   const zOff  = localStorage.getItem("fold-z") === "1";
+  const zrOff = localStorage.getItem("fold-zr") === "1";
+  document.getElementById("zrList").style.display = zrOff ? "none" : "";
+  document.querySelector("#zrHead .fold").textContent = zrOff ? "▸" : "▾";
   document.getElementById("dtList").style.display = dtOff ? "none" : "";
   document.getElementById("dtFoot").style.display = dtOff ? "none" : "";
   document.getElementById("zList").style.display  = zOff ? "none" : "";
@@ -868,6 +877,9 @@ document.getElementById("dtHead").onclick = () => {
 };
 document.getElementById("zHead").onclick = () => {
   localStorage.setItem("fold-z", localStorage.getItem("fold-z") === "1" ? "0" : "1"); applyFold();
+};
+document.getElementById("zrHead").onclick = () => {
+  localStorage.setItem("fold-zr", localStorage.getItem("fold-zr") === "1" ? "0" : "1"); applyFold();
 };
 applyFold();
 
@@ -947,7 +959,89 @@ addEventListener("click", e => {
 
 function refreshPanels(where) {
   if (where === "dt") { dtKids = {}; listDesktop(); }
+  else if (where === "zr") { zrKids = {}; zrShow(); }
   else { zKids = {}; if (sel) showBranch(sel); }
+}
+
+
+/* ---- Zの中身（丸ごと。ここからも枝へ放り込める） ---- */
+let zrOpen = new Set(), zrKids = {};
+
+async function zrLoad(rel) {
+  if (zrKids[rel]) return zrKids[rel];
+  const r = await fetch(HELPER + "/api/list?path=" + encodeURIComponent(rel) + "&t=" + Math.random());
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  zrKids[rel] = j.entries.map(e => ({
+    name: e.name, rel: rel + "\\" + e.name, dir: e.dir, mtime: (e.mtime || "").slice(0, 10)
+  }));
+  return zrKids[rel];
+}
+
+async function zrShow() {
+  const box = document.getElementById("zrList");
+  if (mode !== "helper") { box.innerHTML = `<div class="dead">このPCでは見れん（読み役がおらん）</div>`; return; }
+  try { await zrLoad("Z"); zrRender(); }
+  catch (e) { box.innerHTML = `<div class="dead">Zが読めん：${e.message}</div>`; }
+}
+
+function zrRender() {
+  const box = document.getElementById("zrList");
+  box.innerHTML = "";
+  const rows = [];
+  const walk = (rel, depth) => {
+    (zrKids[rel] || []).forEach(e => {
+      rows.push({ ...e, depth });
+      if (e.dir && zrOpen.has(e.rel)) walk(e.rel, depth + 1);
+    });
+  };
+  walk("Z", 0);
+  rows.forEach(e => {
+    const el = document.createElement("div");
+    el.className = "it " + dtKind(e);
+    el.style.paddingLeft = (12 + e.depth * 14) + "px";
+    el.innerHTML = `<span class="tw">${e.dir ? (zrOpen.has(e.rel) ? "▾" : "▸") : ""}</span>` +
+                   `<span>${dtIcon(e)}</span><span class="nm"></span><span class="mt">${e.mtime}</span>`;
+    el.querySelector(".nm").textContent = e.name;
+    el.title = e.rel.replace(/^Z/, "Z:");
+    const toggle = async () => {
+      if (zrOpen.has(e.rel)) zrOpen.delete(e.rel);
+      else { try { await zrLoad(e.rel); zrOpen.add(e.rel); } catch (x) { } }
+      zrRender();
+    };
+    if (e.dir) el.querySelector(".tw").onclick = ev => { ev.stopPropagation(); toggle(); };
+    el.ondblclick = () => {
+      if (e.dir) toggle();
+      else fetch(HELPER + "/api/open?path=" + encodeURIComponent(e.rel)).catch(() => { });
+    };
+    el.oncontextmenu = ev => sideMenu(ev, e, "zr");
+    el.draggable = true;
+    el.ondragstart = ev => {
+      ev.dataTransfer.setData("text/plain", "z:" + e.rel);
+      ev.dataTransfer.effectAllowed = "move";
+    };
+    box.appendChild(el);
+  });
+  document.getElementById("zrCount").textContent = (zrKids["Z"] || []).length + "個";
+}
+
+/* Zの中で移す（Z→枝） */
+async function moveInZ(rel, nodeId) {
+  const path = pathOf(nodeId);
+  const dest = ["Z"].concat(path).join("\\");
+  const name = rel.split("\\").pop();
+  if (dest === rel.split("\\").slice(0, -1).join("\\")) { foot("もうそこに入ってる"); return; }
+  if (!confirm("「" + name + "」を  " + dest.replace(/^Z/, "Z:") + "  へ移す。ええ？")) return;
+  try {
+    const r = await fetch(HELPER + "/api/move", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ srcs: [rel], dest })
+    });
+    const j = await r.json();
+    if (j.error) { alert("移せんかった：" + j.error); return; }
+    foot(`「${name}」を ${dest.replace(/^Z/, "Z:")} へ移した`);
+    zrKids = {}; zKids = {}; zrShow(); if (sel) showBranch(sel);
+  } catch (e) { alert("読み役につながらん"); }
 }
 
 render(); fit(); syncLabel();
