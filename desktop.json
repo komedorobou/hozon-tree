@@ -204,13 +204,6 @@
    "kind": "Excel"
   },
   {
-   "name": "~$022.12.26】  .doc",
-   "dir": false,
-   "size": 162,
-   "mtime": "2022/12/21 11:38",
-   "kind": "Word"
-  },
-  {
    "name": "~$022.12.9】 .doc",
    "dir": false,
    "size": 162,
@@ -512,7 +505,7 @@
    "kind": "Excel"
   }
  ],
- "total": 73,
+ "total": 72,
  "links": 18,
  "at": "2026/07/31 17:39"
 }
