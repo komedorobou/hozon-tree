@@ -86,7 +86,8 @@ let uid = 1, sel = null, undo = [], views = [];
 let tree = load() || { id: "r", name: "Z（本置き場）", kids: [] };
 
 function load() { try { return JSON.parse(localStorage.getItem("eda")) } catch { return null } }
-function save() { localStorage.setItem("eda", JSON.stringify(tree)); dirty = true; syncLabel(); }
+function save() { localStorage.setItem("eda", JSON.stringify(tree)); }
+function touch() { dirty = true; syncLabel(); }
 
 /* ---- GitHub に置く（このPCだけやなく、どのPCからでも同じ形） ---- */
 const REPO = "komedorobou/hozon-tree", FILE = "data.json";
@@ -142,7 +143,7 @@ async function push() {
   sha = (await r.json()).content.sha;
   dirty = false; syncLabel();
 }
-function snap() { undo.push(JSON.stringify(tree)); if (undo.length > 60) undo.shift(); }
+function snap() { undo.push(JSON.stringify(tree)); if (undo.length > 60) undo.shift(); touch(); }
 
 const find = (id, n = tree) => n.id === id ? n : n.kids.reduce((a, k) => a || find(id, k), null);
 const parentOf = (id, n = tree) => n.kids.some(k => k.id === id) ? n : n.kids.reduce((a, k) => a || parentOf(id, k), null);
@@ -267,7 +268,7 @@ function cut() {
 }
 function undoIt() {
   if (!undo.length) return;
-  tree = JSON.parse(undo.pop()); render();
+  tree = JSON.parse(undo.pop()); touch(); render();
 }
 
 /* ---- 並べ替え ---- */
