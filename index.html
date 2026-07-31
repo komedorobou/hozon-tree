@@ -533,9 +533,39 @@ const dtKind = e => e.name.startsWith("~$") ? "junk"
   : /\.(lnk|url)$/i.test(e.name) ? "link" : e.dir ? "dir" : "file";
 const foot = t => document.getElementById("dtFoot").textContent = t;
 
+/* ---- ①このPCの読み役（いちばん楽。ダイアログ無し） ---- */
+const HELPER = "http://127.0.0.1:8777";
+let mode = "";                       // helper / fs / mirror
+const stamp = () => {
+  const d = new Date(), p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+};
+
+async function tryHelper() {
+  const r = await fetch(HELPER + "/api/desktop?t=" + Math.random());
+  const d = await r.json();
+  mode = "helper";
+  drawDesktop(d.items.map(e => ({ name: e.name, dir: e.dir, mtime: (e.mtime || "").slice(0, 10) })));
+  foot("枝にドラッグしたら、そこへ入る");
+  fetch(API + "?kind=desktop", {                      // 他のPCで見るための写し
+    method: "PUT", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tree: { items: d.items, total: d.total, links: d.links, at: stamp() } })
+  }).catch(() => { });
+}
+
+async function tryMirror() {
+  const r = await fetch(API + "?kind=desktop&t=" + Math.random());
+  const j = await r.json();
+  if (!j.tree || !j.tree.items) throw 0;
+  mode = "mirror";
+  drawDesktop(j.tree.items.map(e => ({ name: e.name, dir: e.dir, mtime: (e.mtime || "").slice(0, 10) })));
+  foot(`${j.tree.at} 時点の写し（このPCでは動かせん）`);
+}
+
 /* デスクトップを読んで並べる */
 async function listDesktop() {
   const list = document.getElementById("dtList");
+  try { await tryHelper(); return; } catch (e) { }
   if (!canFS) {
     list.innerHTML = `<div class="dead"><b>このブラウザでは使えん</b><br>Chrome か Edge で開いて。</div>`;
     foot("—"); return;
@@ -543,6 +573,7 @@ async function listDesktop() {
   deskH = await allow(deskH || await store.get("desk"));
   zH = await allow(zH || await store.get("z"));
   if (!deskH || !zH) {
+    try { await tryMirror(); return; } catch (e) { }
     list.innerHTML = `<div class="dead">
       このPCで一度だけ場所を教えて。<br><br>
       <button class="pickbtn" id="pk1">${deskH ? "✓ " : ""}① OneDrive フォルダを選ぶ</button><br>
@@ -627,9 +658,25 @@ async function copyDir(srcDir, destParent, name, prog) {
 }
 
 async function stow(name, nodeId) {
-  if (!deskH || !zH) { alert("先に場所を教えて（右下のボタン）"); return; }
   const path = pathOf(nodeId);
   const where = "Z:\\" + path.join("\\");
+
+  if (mode === "mirror") { alert("このPCでは動かせん（写しを見てるだけ）。"); return; }
+  if (mode === "helper") {
+    if (!confirm(`「${name}」を\n${where}\nへ移す。ええ？`)) return;
+    try {
+      const r = await fetch(HELPER + "/api/stow", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, path })
+      });
+      const j = await r.json();
+      if (j.error) { alert("入らんかった：" + j.error); return; }
+      foot(`「${name}」を ${where} へ入れた`);
+    } catch (e) { alert("読み役が落ちてる。PCを再起動するか、Z:\\_ツール\\seiri\\起動.bat を実行して。"); }
+    listDesktop(); return;
+  }
+
+  if (!deskH || !zH) { alert("先に場所を教えて（右下のボタン）"); return; }
   if (!confirm(`「${name}」を\n${where}\nへ移す。ええ？`)) return;
   try {
     let dest = zH;
