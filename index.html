@@ -64,6 +64,8 @@ footer b{color:var(--sumi)}
   <span class="t">保存ルール　枝を生やす</span>
   <span class="h"><b>Tab</b> 枝を伸ばす　<b>Enter</b> 隣に生やす　<b>↑↓</b> 順番を入れ替え<b>F2</b> 名前　<b>Del</b> 切る　<b>Ctrl+Z</b> 戻す</span>
   <span class="sp"></span>
+  <span id="sync" class="h"></span>
+  <button id="cloud">保存（みんなの分）</button>
   <button id="fit">全体を見る</button>
   <button id="ex">.txt で保存</button>
   <button id="clr">最初から</button>
@@ -84,7 +86,62 @@ let uid = 1, sel = null, undo = [], views = [];
 let tree = load() || { id: "r", name: "Z（本置き場）", kids: [] };
 
 function load() { try { return JSON.parse(localStorage.getItem("eda")) } catch { return null } }
-function save() { localStorage.setItem("eda", JSON.stringify(tree)); }
+function save() { localStorage.setItem("eda", JSON.stringify(tree)); dirty = true; syncLabel(); }
+
+/* ---- GitHub に置く（このPCだけやなく、どのPCからでも同じ形） ---- */
+const REPO = "komedorobou/hozon-tree", FILE = "data.json";
+let sha = null, dirty = false, pulling = true;
+
+const syncLabel = () => {
+  document.getElementById("sync").textContent =
+    pulling ? "読み込み中…" : dirty ? "未保存" : "保存済み";
+};
+
+async function pull() {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}?t=` + Math.random(),
+      { headers: { Accept: "application/vnd.github+json" } });
+    if (r.status === 404) { pulling = false; syncLabel(); return; }
+    const j = await r.json();
+    sha = j.sha;
+    const data = JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g, "")))));
+    if (data && data.kids) { tree = data; localStorage.setItem("eda", JSON.stringify(tree)); }
+  } catch (e) { console.warn(e); }
+  pulling = false; dirty = false; syncLabel(); render(); fit();
+}
+
+function token() {
+  let t = localStorage.getItem("ght");
+  if (!t) {
+    t = prompt("GitHub の鍵（Personal access token）を1回だけ貼って。\n"
+             + "権限は hozon-tree リポジトリの Contents: Read and write だけでええ。");
+    if (!t) return null;
+    localStorage.setItem("ght", t.trim());
+  }
+  return localStorage.getItem("ght");
+}
+
+async function push() {
+  const t = token(); if (!t) return;
+  const body = {
+    message: "ツリー更新",
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(tree, null, 1)))),
+    ...(sha ? { sha } : {})
+  };
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
+    method: "PUT",
+    headers: { Authorization: "Bearer " + t, Accept: "application/vnd.github+json" },
+    body: JSON.stringify(body)
+  });
+  if (r.status === 401 || r.status === 403) {
+    localStorage.removeItem("ght");
+    alert("鍵がはねられた。もう一回「保存」を押して、新しい鍵を貼って。");
+    return;
+  }
+  if (!r.ok) { alert("保存でけへんかった：" + r.status + " " + (await r.text()).slice(0, 200)); return; }
+  sha = (await r.json()).content.sha;
+  dirty = false; syncLabel();
+}
 function snap() { undo.push(JSON.stringify(tree)); if (undo.length > 60) undo.shift(); }
 
 const find = (id, n = tree) => n.id === id ? n : n.kids.reduce((a, k) => a || find(id, k), null);
@@ -280,8 +337,12 @@ document.getElementById("ex").onclick = () => {
   a.href = URL.createObjectURL(b); a.download = "保存ルール_ツリー.txt"; a.click();
 };
 
-render(); fit();
+document.getElementById("cloud").onclick = push;
+addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+render(); fit(); syncLabel();
 if (!tree.kids.length) { sel = "r"; render(); }
+pull();
 </script>
 </body>
 </html>
