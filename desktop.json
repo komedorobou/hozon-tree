@@ -323,13 +323,6 @@
    "kind": "Excel"
   },
   {
-   "name": "日刊用画像.docx",
-   "dir": false,
-   "size": 456144,
-   "mtime": "2026/07/27 13:03",
-   "kind": "Word"
-  },
-  {
    "name": "月次更新.lnk",
    "dir": false,
    "size": 1115,
@@ -435,7 +428,7 @@
    "kind": "Excel"
   }
  ],
- "total": 62,
+ "total": 61,
  "links": 18,
- "at": "2026/07/31 17:40"
+ "at": "2026/07/31 17:41"
 }
