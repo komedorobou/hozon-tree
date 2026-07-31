@@ -35,6 +35,8 @@ header button:hover{background:#ffffff1a}
 #side .foot{flex:none;border-top:1px solid var(--line);padding:6px 12px;font-size:11px;color:#8a8880}
 #side .dead{padding:16px 14px;font-size:12px;color:#8a8880;line-height:1.8}
 #side .dead b{color:var(--shu)}
+.pickbtn{margin:6px 0;padding:7px 14px;border:1px solid var(--ai);background:var(--ai);color:#fff;border-radius:4px;font:inherit;font-size:13px;cursor:pointer}
+.pickbtn:hover{opacity:.88}
 #stage.drag{cursor:grabbing}
 #world{position:absolute;left:0;top:0;transform-origin:0 0}
 svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
@@ -434,12 +436,59 @@ document.getElementById("ex").onclick = () => {
 document.getElementById("cloud").onclick = () => push(true);
 addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
 
-/* ---- 右：いまのデスクトップ（このPCの常駐アプリから3秒ごとに取る） ---- */
-const LOCAL = "http://127.0.0.1:8777/api/desktop";
-const LOCAL_STOW = "http://127.0.0.1:8777/api/stow";
-let dtSig = "", localLive = false;
+/* ---- 右：いまのデスクトップ（ブラウザが直にフォルダを見る。どのPCでも同じ） ---- */
 
-/* 枝の道順（根＝Z直下なので根の名前は含めん） */
+/* 選んだフォルダの権利をブラウザに覚えさせる小さな入れ物 */
+const store = {
+  db: null,
+  open() {
+    return this.db ? Promise.resolve(this.db) : new Promise((ok, ng) => {
+      const q = indexedDB.open("seiri", 1);
+      q.onupgradeneeded = () => q.result.createObjectStore("h");
+      q.onsuccess = () => { this.db = q.result; ok(this.db); };
+      q.onerror = () => ng(q.error);
+    });
+  },
+  async get(k) {
+    const db = await this.open();
+    return new Promise(ok => {
+      const r = db.transaction("h").objectStore("h").get(k);
+      r.onsuccess = () => ok(r.result || null); r.onerror = () => ok(null);
+    });
+  },
+  async set(k, v) {
+    const db = await this.open();
+    return new Promise(ok => {
+      const r = db.transaction("h", "readwrite").objectStore("h").put(v, k);
+      r.onsuccess = r.onerror = () => ok();
+    });
+  }
+};
+
+let deskH = null, zH = null;
+const canFS = "showDirectoryPicker" in window;
+
+async function allow(h) {                       // 権利があるか確かめる（無ければ聞く）
+  if (!h) return null;
+  const opt = { mode: "readwrite" };
+  if (await h.queryPermission(opt) === "granted") return h;
+  if (await h.requestPermission(opt) === "granted") return h;
+  return null;
+}
+
+async function pick(which) {
+  try {
+    const h = await showDirectoryPicker({
+      id: which, mode: "readwrite",
+      startIn: which === "desk" ? "desktop" : undefined
+    });
+    await store.set(which, h);
+    if (which === "desk") deskH = h; else zH = h;
+    listDesktop();
+  } catch (e) { /* 選ぶのをやめただけ */ }
+}
+
+/* 枝の道順（根＝Zそのものなので根の名前は含めん） */
 function pathOf(id) {
   const walk = (nodes, trail) => {
     for (const n of nodes) {
@@ -453,22 +502,6 @@ function pathOf(id) {
   return id === "r" ? [] : (walk(tree.kids, []) || []);
 }
 
-/* デスクトップの物を枝へ入れる（実際に動く） */
-async function stow(name, nodeId) {
-  const path = pathOf(nodeId);
-  const where = "Z:\\" + path.join("\\");
-  if (!confirm(`「${name}」を\n${where}\nへ移す。ええ？`)) return;
-  try {
-    const r = await fetch(LOCAL_STOW, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, path })
-    });
-    const j = await r.json();
-    if (j.error) { alert("入らんかった：" + j.error); return; }
-    document.getElementById("dtFoot").textContent = `「${name}」を ${where} へ入れた`;
-    pollDesktop();
-  } catch (e) { alert("読み役につながらん。デスクトップ取得.bat を動かして。"); }
-}
 const dtIcon = e => {
   if (e.dir) return "📁";
   const x = e.name.toLowerCase();
@@ -485,67 +518,130 @@ const dtIcon = e => {
 };
 const dtKind = e => e.name.startsWith("~$") ? "junk"
   : /\.(lnk|url)$/i.test(e.name) ? "link" : e.dir ? "dir" : "file";
+const foot = t => document.getElementById("dtFoot").textContent = t;
 
-const stamp = () => {
-  const d = new Date();
-  const p = n => String(n).padStart(2, "0");
-  return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-};
-
-async function pollDesktop() {
-  // ① このPCで読み役が動いてたら、そこから直に読む（＝今の中身）
-  try {
-    const r = await fetch(LOCAL + "?t=" + Math.random());
-    const d = await r.json();
-    localLive = true;
-    drawDesktop(d);
-    document.getElementById("dtFoot").textContent = "枝にドラッグしたら、そこへ入る";
-    // 他のPCでも見られるようにクラウドへ写しを置く
-    fetch(API + "?kind=desktop", {
-      method: "PUT", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tree: { ...d, at: stamp() } })
-    }).catch(() => {});
-    return;
-  } catch (e) { /* 読み役がおらん → クラウドの写しを見る */ }
-
-  // ② 写しを見る（あっちのPC用。OneDriveで中身は同じ）
-  try {
-    const r = await fetch(API + "?kind=desktop&t=" + Math.random());
-    const j = await r.json();
-    if (!j.tree) throw 0;
-    drawDesktop(j.tree);
-    document.getElementById("dtFoot").textContent = `${j.tree.at} 時点の写し（このPCには読み役がおらん）`;
-  } catch (e) {
-    document.getElementById("dtCount").textContent = "";
-    document.getElementById("dtList").innerHTML =
-      `<div class="dead"><b>まだ何も無い</b><br>読み役が動いてるPCで一度この画面を開いたら、<br>
-       ここにも同じ一覧が出るようになる。<br><br>
-       読み役＝デスクトップの <b>デスクトップ取得.bat</b></div>`;
-    document.getElementById("dtFoot").textContent = "—";
+/* デスクトップを読んで並べる */
+async function listDesktop() {
+  const list = document.getElementById("dtList");
+  if (!canFS) {
+    list.innerHTML = `<div class="dead"><b>このブラウザでは使えん</b><br>Chrome か Edge で開いて。</div>`;
+    foot("—"); return;
   }
+  deskH = await allow(deskH || await store.get("desk"));
+  zH = await allow(zH || await store.get("z"));
+  if (!deskH || !zH) {
+    list.innerHTML = `<div class="dead">
+      このPCで一度だけ場所を教えて。<br><br>
+      <button class="pickbtn" id="pk1">${deskH ? "✓ " : ""}デスクトップを選ぶ</button><br>
+      <button class="pickbtn" id="pk2">${zH ? "✓ " : ""}Zドライブを選ぶ</button><br><br>
+      次からは覚えてる（PCごとに1回）。</div>`;
+    document.getElementById("pk1").onclick = () => pick("desk");
+    document.getElementById("pk2").onclick = () => pick("z");
+    document.getElementById("dtCount").textContent = "";
+    foot("場所を教えてもろたら出る"); return;
+  }
+
+  const items = [];
+  for await (const [name, h] of deskH.entries()) {
+    if (name.toLowerCase() === "desktop.ini") continue;
+    let mtime = "", size = 0;
+    if (h.kind === "file") {
+      try { const f = await h.getFile(); mtime = new Date(f.lastModified).toISOString().slice(0, 10); size = f.size; }
+      catch (e) { }
+    }
+    items.push({ name, dir: h.kind === "directory", mtime, size });
+  }
+  items.sort((a, b) => a.dir !== b.dir ? (a.dir ? -1 : 1) : a.name.localeCompare(b.name, "ja"));
+  drawDesktop(items);
+  foot("枝にドラッグしたら、そこへ入る");
 }
-function drawDesktop(d) {
+
+function drawDesktop(items) {
   const list = document.getElementById("dtList");
   list.innerHTML = "";
-  d.items.forEach(e => {
+  items.forEach(e => {
     const el = document.createElement("div");
     el.className = "it " + dtKind(e);
-    el.innerHTML = `<span>${dtIcon(e)}</span><span class="nm"></span><span class="mt">${e.mtime.slice(0, 10)}</span>`;
+    el.innerHTML = `<span>${dtIcon(e)}</span><span class="nm"></span><span class="mt">${e.mtime}</span>`;
     el.querySelector(".nm").textContent = e.name;
-    el.title = e.name + "　" + e.kind + "\n枝にドラッグしたら、そこへ入る";
-    if (localLive) {
-      el.draggable = true;
-      el.ondragstart = ev => {
-        ev.dataTransfer.setData("text/plain", "dt:" + e.name);
-        ev.dataTransfer.effectAllowed = "move";
-      };
-    }
+    el.title = e.name + "\n枝にドラッグしたら、そこへ入る";
+    el.draggable = true;
+    el.ondragstart = ev => {
+      ev.dataTransfer.setData("text/plain", "dt:" + e.name);
+      ev.dataTransfer.effectAllowed = "move";
+    };
     list.appendChild(el);
   });
+  const links = items.filter(e => /\.(lnk|url)$/i.test(e.name)).length;
   document.getElementById("dtCount").textContent =
-    `${d.total}個（ショートカット${d.links} / 実体${d.total - d.links}）`;
+    `${items.length}個（ショートカット${links} / 実体${items.length - links}）`;
 }
-pollDesktop();
+
+/* ---- 実際に移す ---- */
+async function uniqName(dir, name) {
+  const has = async n => {
+    try { await dir.getFileHandle(n); return true; } catch (e) { }
+    try { await dir.getDirectoryHandle(n); return true; } catch (e) { }
+    return false;
+  };
+  if (!await has(name)) return name;
+  const dot = name.lastIndexOf(".");
+  const base = dot > 0 ? name.slice(0, dot) : name, ext = dot > 0 ? name.slice(dot) : "";
+  for (let i = 2; i < 999; i++) {
+    const c = `${base} (${i})${ext}`;
+    if (!await has(c)) return c;
+  }
+  return name + "_" + Date.now();
+}
+
+async function copyFile(srcH, destDir, name) {
+  const f = await srcH.getFile();
+  const w = await (await destDir.getFileHandle(name, { create: true })).createWritable();
+  await w.write(f);
+  await w.close();
+}
+
+async function copyDir(srcDir, destParent, name, prog) {
+  const dest = await destParent.getDirectoryHandle(name, { create: true });
+  for await (const [n, h] of srcDir.entries()) {
+    if (h.kind === "file") { await copyFile(h, dest, n); prog.n++; }
+    else await copyDir(h, dest, n, prog);
+    if (prog.n % 20 === 0) foot(`運んでる… ${prog.n}件`);
+  }
+  return dest;
+}
+
+async function stow(name, nodeId) {
+  if (!deskH || !zH) { alert("先に場所を教えて（右下のボタン）"); return; }
+  const path = pathOf(nodeId);
+  const where = "Z:\\" + path.join("\\");
+  if (!confirm(`「${name}」を\n${where}\nへ移す。ええ？`)) return;
+  try {
+    let dest = zH;
+    for (const p of path) dest = await dest.getDirectoryHandle(p, { create: true });
+
+    let src = null, isDir = false;
+    try { src = await deskH.getFileHandle(name); }
+    catch (e) { src = await deskH.getDirectoryHandle(name); isDir = true; }
+
+    const to = await uniqName(dest, name);
+    const prog = { n: 0 };
+    foot(`運んでる… ${name}`);
+    if (isDir) await copyDir(src, dest, to, prog);
+    else await copyFile(src, dest, to);
+
+    await deskH.removeEntry(name, { recursive: isDir });
+    foot(`「${name}」を ${where} へ入れた`);
+    listDesktop();
+  } catch (e) {
+    alert("入らんかった：" + (e && e.message ? e.message : e));
+    listDesktop();
+  }
+}
+
+listDesktop();
+
+
 
 render(); fit(); syncLabel();
 if (!tree.kids.length) { sel = "r"; render(); }
