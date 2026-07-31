@@ -241,10 +241,11 @@ function rename(isNew) {
   const fin = ok => {
     document.body.classList.remove("editing");
     const v = inp.value.trim();
-    if (ok && v) { if (!isNew) snap(); n.name = v; }
+    if (ok && v) { if (!isNew) snap(); n.name = v; touch(); }   // 名前も必ず保存する
     else if (isNew || !n.name.trim()) {      // 名前が空の枝は残さん（見えへん枝ができる）
       const p = parentOf(n.id);
       if (p) { p.kids = p.kids.filter(k => k.id !== n.id); sel = p.id; }
+      touch();
     }
     render();
   };
