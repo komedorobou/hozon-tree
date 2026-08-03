@@ -81,7 +81,7 @@
    "name": "第81回定期大会",
    "dir": true,
    "size": 0,
-   "mtime": "2026/08/03 10:18",
+   "mtime": "2026/08/03 10:20",
    "kind": "フォルダー"
   },
   {
@@ -309,20 +309,6 @@
    "kind": "Word"
   },
   {
-   "name": "第81回大会代議員選出（本庁・22グループ）.docx",
-   "dir": false,
-   "size": 36742,
-   "mtime": "2026/07/22 10:59",
-   "kind": "Word"
-  },
-  {
-   "name": "第81回定期大会メッセージ一覧.docx",
-   "dir": false,
-   "size": 36669,
-   "mtime": "2026/07/29 13:55",
-   "kind": "Word"
-  },
-  {
    "name": "組合員名簿2026.7.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE-KITAMATAPC.accdb",
    "dir": false,
    "size": 1642496,
@@ -358,13 +344,6 @@
    "kind": "ショートカット"
   },
   {
-   "name": "２０２６年度会計決算報告カンペ.docx",
-   "dir": false,
-   "size": 19140,
-   "mtime": "2026/07/29 11:27",
-   "kind": "Word"
-  },
-  {
    "name": "８０周年記念品.賞状郵送リスト.xlsx",
    "dir": false,
    "size": 5933659,
@@ -372,7 +351,7 @@
    "kind": "Excel"
   }
  ],
- "total": 53,
+ "total": 50,
  "links": 18,
- "at": "2026/08/03 10:18"
+ "at": "2026/08/03 10:22"
 }
