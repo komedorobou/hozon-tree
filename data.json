@@ -65,15 +65,15 @@
    "name": "組織",
    "kids": [
     {
-     "id": "n2ms8ffxd2",
-     "name": "役員選挙",
+     "id": "n3ms8fg1h8",
+     "name": "定期大会",
      "kids": [],
      "x": 502,
      "y": 276
     },
     {
-     "id": "n3ms8fg1h8",
-     "name": "定期大会",
+     "id": "n2ms8ffxd2",
+     "name": "役員選挙",
      "kids": [],
      "x": 502,
      "y": 322
