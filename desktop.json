@@ -92,6 +92,13 @@
    "kind": "ショートカット"
   },
   {
+   "name": "2026.4　セット共済 岸和田市職労変更.xlsx",
+   "dir": false,
+   "size": 265370,
+   "mtime": "2026/07/27 16:59",
+   "kind": "Excel"
+  },
+  {
    "name": "2026.7.1時点組合員人数表.xlsx",
    "dir": false,
    "size": 576582,
@@ -204,20 +211,6 @@
    "kind": "Excel"
   },
   {
-   "name": "●組合･労金給与引入力表ver4-KITAMATAPC.xlsm",
-   "dir": false,
-   "size": 2156833,
-   "mtime": "2026/07/22 13:54",
-   "kind": "Excel マクロ"
-  },
-  {
-   "name": "【2026.4】労金まとめ入金依頼明細.xlsm",
-   "dir": false,
-   "size": 47724,
-   "mtime": "2026/04/17 09:32",
-   "kind": "Excel マクロ"
-  },
-  {
    "name": "【作業中】２０２５役員体制.xlsx",
    "dir": false,
    "size": 97860,
@@ -260,13 +253,6 @@
    "kind": "Excel"
   },
   {
-   "name": "労金控除依頼データ_20260415.xlsx",
-   "dir": false,
-   "size": 47007,
-   "mtime": "2026/04/15 09:43",
-   "kind": "Excel"
-  },
-  {
    "name": "口座振込依頼書 .docx",
    "dir": false,
    "size": 15337,
@@ -279,13 +265,6 @@
    "size": 240218753,
    "mtime": "2026/06/26 20:00",
    "kind": "動画"
-  },
-  {
-   "name": "岸和田市職労変更.xlsx",
-   "dir": false,
-   "size": 265370,
-   "mtime": "2026/07/27 16:59",
-   "kind": "Excel"
   },
   {
    "name": "拡張機能.lnk",
@@ -414,7 +393,7 @@
    "kind": "Excel"
   }
  ],
- "total": 59,
+ "total": 56,
  "links": 18,
- "at": "2026/07/31 18:17"
+ "at": "2026/08/03 10:08"
 }
