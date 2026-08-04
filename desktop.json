@@ -246,13 +246,6 @@
    "kind": "Access"
   },
   {
-   "name": "診療報酬点数 - 今日の臨床サポートhttps---clinicalsup.jp-jpoc-shinryou.url",
-   "dir": false,
-   "size": 92,
-   "mtime": "2024/12/26 09:57",
-   "kind": "インターネット"
-  },
-  {
    "name": "財政システム - ショートカット.lnk",
    "dir": false,
    "size": 1310,
@@ -267,7 +260,7 @@
    "kind": "Excel"
   }
  ],
- "total": 38,
- "links": 14,
- "at": "2026/08/04 12:55"
+ "total": 37,
+ "links": 13,
+ "at": "2026/08/04 12:57"
 }
