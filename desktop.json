@@ -18,14 +18,14 @@
    "name": "THE収入・支出命令書",
    "dir": true,
    "size": 0,
-   "mtime": "2026/08/17 17:33",
+   "mtime": "2026/08/26 15:20",
    "kind": "フォルダー"
   },
   {
    "name": "きたｍｔ",
    "dir": true,
    "size": 0,
-   "mtime": "2026/08/07 10:01",
+   "mtime": "2026/08/27 09:21",
    "kind": "フォルダー"
   },
   {
@@ -46,7 +46,7 @@
    "name": "當舎",
    "dir": true,
    "size": 0,
-   "mtime": "2026/08/13 16:24",
+   "mtime": "2026/08/26 10:33",
    "kind": "フォルダー"
   },
   {
@@ -64,17 +64,59 @@
    "kind": "ショートカット"
   },
   {
+   "name": "02_採用内定通知書.docx",
+   "dir": false,
+   "size": 15161,
+   "mtime": "2026/08/25 13:18",
+   "kind": "Word"
+  },
+  {
+   "name": "02_本庁職員安全衛生委員会の開催について（組合推薦委員通知用）.pdf",
+   "dir": false,
+   "size": 76028,
+   "mtime": "2026/08/21 09:38",
+   "kind": "PDF"
+  },
+  {
+   "name": "03_内定承諾書.docx",
+   "dir": false,
+   "size": 14783,
+   "mtime": "2026/08/25 13:17",
+   "kind": "Word"
+  },
+  {
+   "name": "04_提出書類のご案内 (1).docx",
+   "dir": false,
+   "size": 15361,
+   "mtime": "2026/08/25 14:21",
+   "kind": "Word"
+  },
+  {
+   "name": "05_労働条件通知書兼雇用契約書 (3).docx",
+   "dir": false,
+   "size": 16924,
+   "mtime": "2026/08/26 12:52",
+   "kind": "Word"
+  },
+  {
+   "name": "2026-8-25第１回中央執行委員会.docx",
+   "dir": false,
+   "size": 71907,
+   "mtime": "2026/08/25 09:34",
+   "kind": "Word"
+  },
+  {
    "name": "2026.7.8時点組合員名簿.xlsx",
    "dir": false,
-   "size": 42119,
-   "mtime": "2026/07/08 13:58",
+   "size": 41707,
+   "mtime": "2026/08/26 15:04",
    "kind": "Excel"
   },
   {
-   "name": "2026.8.17日刊.doc",
+   "name": "2026.8.19日刊 記事.docx",
    "dir": false,
-   "size": 498688,
-   "mtime": "2026/08/13 17:31",
+   "size": 1275388,
+   "mtime": "2026/08/21 08:00",
    "kind": "Word"
   },
   {
@@ -122,8 +164,8 @@
   {
    "name": "R7各課配席図.xlsm",
    "dir": false,
-   "size": 8334793,
-   "mtime": "2026/08/10 16:23",
+   "size": 8334634,
+   "mtime": "2026/08/27 09:38",
    "kind": "Excel マクロ"
   },
   {
@@ -157,8 +199,8 @@
   {
    "name": "xxxxxxxxxxxxxxxxxxxx.xlsx",
    "dir": false,
-   "size": 134659,
-   "mtime": "2026/08/18 10:11",
+   "size": 134542,
+   "mtime": "2026/08/26 15:55",
    "kind": "Excel"
   },
   {
@@ -183,25 +225,11 @@
    "kind": "Excel"
   },
   {
-   "name": "スタート集会横断幕.doc",
+   "name": "カンパ.xlsx",
    "dir": false,
-   "size": 552960,
-   "mtime": "2026/08/17 09:00",
-   "kind": "Word"
-  },
-  {
-   "name": "スタート集会横断幕_トンボ.png",
-   "dir": false,
-   "size": 418627,
-   "mtime": "2026/08/17 09:06",
-   "kind": "画像"
-  },
-  {
-   "name": "スタート集会横断幕_トンボ_4倍.png",
-   "dir": false,
-   "size": 2703913,
-   "mtime": "2026/08/17 09:10",
-   "kind": "画像"
+   "size": 12953,
+   "mtime": "2026/08/26 09:22",
+   "kind": "Excel"
   },
   {
    "name": "保存ルール_ツリー.url",
@@ -218,6 +246,13 @@
    "kind": "インターネット"
   },
   {
+   "name": "初任給算出表_大塚秀美.docx",
+   "dir": false,
+   "size": 32680,
+   "mtime": "2026/08/25 17:36",
+   "kind": "Word"
+  },
+  {
    "name": "口座振込依頼書 .docx",
    "dir": false,
    "size": 15337,
@@ -225,10 +260,17 @@
    "kind": "Word"
   },
   {
+   "name": "履歴書大塚秀美 (1).pdf",
+   "dir": false,
+   "size": 123395,
+   "mtime": "2026/08/13 17:45",
+   "kind": "PDF"
+  },
+  {
    "name": "成績表.xlsx",
    "dir": false,
-   "size": 25060,
-   "mtime": "2026/08/09 15:36",
+   "size": 28494,
+   "mtime": "2026/08/24 16:03",
    "kind": "Excel"
   },
   {
@@ -241,8 +283,15 @@
   {
    "name": "掛金納入報告書　.xlsx",
    "dir": false,
-   "size": 243639,
-   "mtime": "2026/07/31 11:56",
+   "size": 243726,
+   "mtime": "2026/08/26 16:27",
+   "kind": "Excel"
+  },
+  {
+   "name": "採用.xlsx",
+   "dir": false,
+   "size": 12030,
+   "mtime": "2026/08/24 21:07",
    "kind": "Excel"
   },
   {
@@ -253,24 +302,10 @@
    "kind": "Excel"
   },
   {
-   "name": "書記採用面接進行.doc",
+   "name": "書記局規程.docx",
    "dir": false,
-   "size": 38912,
-   "mtime": "2026/08/18 14:52",
-   "kind": "Word"
-  },
-  {
-   "name": "書記採用面接進行.docx",
-   "dir": false,
-   "size": 40268,
-   "mtime": "2026/08/18 15:07",
-   "kind": "Word"
-  },
-  {
-   "name": "書記採用面接進行_backup_20260817.doc",
-   "dir": false,
-   "size": 31232,
-   "mtime": "2026/08/17 14:35",
+   "size": 32648,
+   "mtime": "2026/08/25 12:56",
    "kind": "Word"
   },
   {
@@ -288,31 +323,31 @@
    "kind": "Word"
   },
   {
-   "name": "第48回定期大会議案（事前配布）_ (1).pdf",
-   "dir": false,
-   "size": 4871658,
-   "mtime": "2026/08/17 14:27",
-   "kind": "PDF"
-  },
-  {
    "name": "組合員名簿2026.7.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE-KITAMATAPC-KITAMATAPC.accdb",
    "dir": false,
    "size": 1642496,
-   "mtime": "2026/08/17 11:46",
+   "mtime": "2026/08/25 13:55",
    "kind": "Access"
+  },
+  {
+   "name": "組合員名簿2026.7.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE-KITAMATAPC-KITAMATAPC.laccdb",
+   "dir": false,
+   "size": 64,
+   "mtime": "2026/08/25 13:55",
+   "kind": "LACCDB ファイル"
   },
   {
    "name": "組合員名簿2026.7.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE-KITAMATAPC.accdb",
    "dir": false,
    "size": 1642496,
-   "mtime": "2026/08/13 17:32",
+   "mtime": "2026/08/24 10:03",
    "kind": "Access"
   },
   {
    "name": "組合員名簿2026.7.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE.accdb",
    "dir": false,
    "size": 1642496,
-   "mtime": "2026/08/10 10:21",
+   "mtime": "2026/08/25 11:57",
    "kind": "Access"
   },
   {
@@ -323,11 +358,11 @@
    "kind": "Word"
   },
   {
-   "name": "職場決議.docx",
+   "name": "自共済26年08月26日.csv",
    "dir": false,
-   "size": 16606,
-   "mtime": "2026/08/07 13:07",
-   "kind": "Word"
+   "size": 211482,
+   "mtime": "2026/08/26 10:35",
+   "kind": "CSV ファイル"
   },
   {
    "name": "訃報.docx",
@@ -344,35 +379,21 @@
    "kind": "ショートカット"
   },
   {
-   "name": "面接.doc",
+   "name": "通勤届（グループウェア）R7.9～.xlsx",
    "dir": false,
-   "size": 29184,
-   "mtime": "2026/08/12 11:21",
-   "kind": "Word"
-  },
-  {
-   "name": "面接日程・担当割一覧_20260818.docx",
-   "dir": false,
-   "size": 36936,
-   "mtime": "2026/08/18 10:17",
-   "kind": "Word"
-  },
-  {
-   "name": "面接日程・担当割一覧_20260818.pdf",
-   "dir": false,
-   "size": 383515,
-   "mtime": "2026/08/18 10:17",
-   "kind": "PDF"
+   "size": 34134,
+   "mtime": "2026/08/25 17:45",
+   "kind": "Excel"
   },
   {
    "name": "２０２７年度特別会計出納帳.xlsx",
    "dir": false,
-   "size": 32495,
-   "mtime": "2026/08/05 09:10",
+   "size": 32877,
+   "mtime": "2026/08/21 10:25",
    "kind": "Excel"
   }
  ],
- "total": 53,
+ "total": 56,
  "links": 13,
- "at": "2026/08/18 15:13"
+ "at": "2026/08/27 11:13"
 }
