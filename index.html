@@ -229,6 +229,11 @@ function render(grownId) {
       const d = ev.dataTransfer.getData("text/plain") || "";
       if (d.startsWith("dt:")) stow(d.slice(3), n.id);
       else if (d.startsWith("z:")) moveInZ(d.slice(2), n.id);
+      else if (ev.dataTransfer.files.length) {       // エクスプローラーのデスクトップから直接
+        const names = [...ev.dataTransfer.files].map(f => f.name);
+        if (names.length === 1) stow(names[0], n.id);
+        else stowMany(names, n.id);
+      }
     };
     nodes.appendChild(el);
     views.push({ n, el });
@@ -848,6 +853,33 @@ async function stow(name, nodeId) {
     listDesktop();
   }
 }
+
+// エクスプローラーから何個かまとめて落とされた時（確認は1回だけ）
+async function stowMany(names, nodeId) {
+  const path = pathOf(nodeId);
+  const where = "Z:\\" + path.join("\\");
+  if (mode !== "helper") { alert("エクスプローラーからのドラッグは、読み役が動いてる時だけ使える。"); return; }
+  if (!confirm(`${names.length}個を\n${where}\nへ移す。ええ？\n\n${names.join("\n")}`)) return;
+  const ng = [];
+  for (const name of names) {
+    try {
+      const r = await fetch(HELPER + "/api/stow", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, path })
+      });
+      const j = await r.json();
+      if (j.error) ng.push(name + "：" + j.error);
+    } catch (e) { alert("読み役が落ちてる。PCを再起動するか、Z:\\_ツール\\seiri\\起動.bat を実行して。"); break; }
+  }
+  foot(`${names.length - ng.length}個を ${where} へ入れた`);
+  if (ng.length) alert("入らんかった：\n" + ng.join("\n"));
+  zKids = {}; zrKids = {}; if (sel) showBranch(sel); zrShow();
+  listDesktop();
+}
+
+// 枝以外に落としてもブラウザがファイルを開いてしまわんように
+addEventListener("dragover", ev => ev.preventDefault());
+addEventListener("drop", ev => ev.preventDefault());
 
 listDesktop();
 setTimeout(() => { if (typeof zrShow === "function") zrShow(); }, 300);
