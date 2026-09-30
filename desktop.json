@@ -4,28 +4,21 @@
    "name": "10年分退職者",
    "dir": true,
    "size": 0,
-   "mtime": "2026/04/27 10:24",
-   "kind": "フォルダー"
-  },
-  {
-   "name": "80周年",
-   "dir": true,
-   "size": 0,
-   "mtime": "2026/08/07 14:25",
+   "mtime": "2026/09/16 14:38",
    "kind": "フォルダー"
   },
   {
    "name": "THE収入・支出命令書",
    "dir": true,
    "size": 0,
-   "mtime": "2026/08/26 15:20",
+   "mtime": "2026/09/16 11:00",
    "kind": "フォルダー"
   },
   {
    "name": "きたｍｔ",
    "dir": true,
    "size": 0,
-   "mtime": "2026/08/27 09:21",
+   "mtime": "2026/09/30 10:20",
    "kind": "フォルダー"
   },
   {
@@ -43,18 +36,25 @@
    "kind": "フォルダー"
   },
   {
-   "name": "當舎",
+   "name": "大阪自治労連定期大会",
    "dir": true,
    "size": 0,
-   "mtime": "2026/08/26 10:33",
+   "mtime": "2026/09/29 12:55",
    "kind": "フォルダー"
   },
   {
-   "name": "-労働組合用駐車場無料券使用者名簿様式ー.xlsx",
-   "dir": false,
-   "size": 36080,
-   "mtime": "2026/07/23 17:08",
-   "kind": "Excel"
+   "name": "日刊",
+   "dir": true,
+   "size": 0,
+   "mtime": "2026/09/25 09:03",
+   "kind": "フォルダー"
+  },
+  {
+   "name": "當舎",
+   "dir": true,
+   "size": 0,
+   "mtime": "2026/09/30 10:20",
+   "kind": "フォルダー"
   },
   {
    "name": ".賃金控除システム、QR伝票、労金ダイレクトURL - コピー.pdf.lnk",
@@ -62,41 +62,6 @@
    "size": 1112,
    "mtime": "2026/08/05 09:53",
    "kind": "ショートカット"
-  },
-  {
-   "name": "02_採用内定通知書.docx",
-   "dir": false,
-   "size": 15161,
-   "mtime": "2026/08/25 13:18",
-   "kind": "Word"
-  },
-  {
-   "name": "02_本庁職員安全衛生委員会の開催について（組合推薦委員通知用）.pdf",
-   "dir": false,
-   "size": 76028,
-   "mtime": "2026/08/21 09:38",
-   "kind": "PDF"
-  },
-  {
-   "name": "03_内定承諾書.docx",
-   "dir": false,
-   "size": 14783,
-   "mtime": "2026/08/25 13:17",
-   "kind": "Word"
-  },
-  {
-   "name": "04_提出書類のご案内 (1).docx",
-   "dir": false,
-   "size": 15361,
-   "mtime": "2026/08/25 14:21",
-   "kind": "Word"
-  },
-  {
-   "name": "05_労働条件通知書兼雇用契約書 (3).docx",
-   "dir": false,
-   "size": 16924,
-   "mtime": "2026/08/26 12:52",
-   "kind": "Word"
   },
   {
    "name": "2026-8-25第１回中央執行委員会.docx",
@@ -108,16 +73,23 @@
   {
    "name": "2026.7.8時点組合員名簿.xlsx",
    "dir": false,
-   "size": 41707,
-   "mtime": "2026/08/26 15:04",
+   "size": 41811,
+   "mtime": "2026/09/16 10:28",
    "kind": "Excel"
   },
   {
-   "name": "2026.8.19日刊 記事.docx",
+   "name": "2026.9.1時点組合員人数表.xlsx",
    "dir": false,
-   "size": 1275388,
-   "mtime": "2026/08/21 08:00",
-   "kind": "Word"
+   "size": 590839,
+   "mtime": "2026/09/03 18:19",
+   "kind": "Excel"
+  },
+  {
+   "name": "20260831-① 第35回実務研修会参加申込.xls",
+   "dir": false,
+   "size": 85504,
+   "mtime": "2026/09/29 16:12",
+   "kind": "Excel"
   },
   {
    "name": "2026年第9回幹事会レジメ.docx",
@@ -127,6 +99,13 @@
    "kind": "Word"
   },
   {
+   "name": "2027年度議案書（案） 9月12日.pdf",
+   "dir": false,
+   "size": 1193112,
+   "mtime": "2026/09/29 14:35",
+   "kind": "PDF"
+  },
+  {
    "name": "2027金銭出納帳 - .xls",
    "dir": false,
    "size": 220672,
@@ -134,11 +113,39 @@
    "kind": "Excel"
   },
   {
-   "name": "297添付　【都市職部会】1年間のたたかいの報告（2025年度）.xlsx",
+   "name": "26.09.26（土）隔日版.pdf",
    "dir": false,
-   "size": 12270,
-   "mtime": "2026/08/12 15:22",
-   "kind": "Excel"
+   "size": 2609504,
+   "mtime": "2026/09/30 10:15",
+   "kind": "PDF"
+  },
+  {
+   "name": "320　【別紙①】第18回自治研集会リーフレット（両面）.pdf",
+   "dir": false,
+   "size": 2761080,
+   "mtime": "2026/09/08 11:39",
+   "kind": "PDF"
+  },
+  {
+   "name": "320　【別紙②】第18回自治研集会in広島　申込書（単組用）.docx",
+   "dir": false,
+   "size": 25037,
+   "mtime": "2026/09/08 11:39",
+   "kind": "Word"
+  },
+  {
+   "name": "320　【別紙③】「はじめての『自治研』【概要版】」リーフ（PDF版）.pdf",
+   "dir": false,
+   "size": 1322385,
+   "mtime": "2026/09/08 11:39",
+   "kind": "PDF"
+  },
+  {
+   "name": "320　第18回地方自治研究全国集会in広島_開催に係る通知.doc",
+   "dir": false,
+   "size": 64512,
+   "mtime": "2026/09/08 11:39",
+   "kind": "Word"
   },
   {
    "name": "OneDrive.lnk",
@@ -162,10 +169,17 @@
    "kind": "ショートカット"
   },
   {
+   "name": "QR伝票作成システム｜近畿ろうきん (淳).lnk",
+   "dir": false,
+   "size": 2480,
+   "mtime": "2026/09/08 14:53",
+   "kind": "ショートカット"
+  },
+  {
    "name": "R7各課配席図.xlsm",
    "dir": false,
-   "size": 8334634,
-   "mtime": "2026/08/27 09:38",
+   "size": 8334813,
+   "mtime": "2026/09/16 09:18",
    "kind": "Excel マクロ"
   },
   {
@@ -197,38 +211,38 @@
    "kind": "ショートカット"
   },
   {
-   "name": "xxxxxxxxxxxxxxxxxxxx.xlsx",
+   "name": "~$RD0002.tmp",
    "dir": false,
-   "size": 134542,
-   "mtime": "2026/08/26 15:55",
-   "kind": "Excel"
+   "size": 162,
+   "mtime": "2026/09/18 10:33",
+   "kind": "TMP ファイル"
+  },
+  {
+   "name": "~$RD1070.tmp",
+   "dir": false,
+   "size": 162,
+   "mtime": "2026/09/18 15:57",
+   "kind": "TMP ファイル"
   },
   {
    "name": "●組合・労金給与引入力表用職員リストR8.xlsx",
    "dir": false,
-   "size": 257815,
-   "mtime": "2026/07/15 10:56",
-   "kind": "Excel"
-  },
-  {
-   "name": "【作業中】２０２５役員体制.xlsx",
-   "dir": false,
-   "size": 97860,
-   "mtime": "2025/09/29 17:20",
+   "size": 250448,
+   "mtime": "2026/09/17 12:55",
    "kind": "Excel"
   },
   {
    "name": "【作業中】２０２７役員体制.xlsx",
    "dir": false,
-   "size": 97860,
-   "mtime": "2025/09/29 17:20",
+   "size": 62869,
+   "mtime": "2026/08/27 17:48",
    "kind": "Excel"
   },
   {
    "name": "カンパ.xlsx",
    "dir": false,
-   "size": 12953,
-   "mtime": "2026/08/26 09:22",
+   "size": 13654,
+   "mtime": "2026/09/02 10:33",
    "kind": "Excel"
   },
   {
@@ -246,13 +260,6 @@
    "kind": "インターネット"
   },
   {
-   "name": "初任給算出表_大塚秀美.docx",
-   "dir": false,
-   "size": 32680,
-   "mtime": "2026/08/25 17:36",
-   "kind": "Word"
-  },
-  {
    "name": "口座振込依頼書 .docx",
    "dir": false,
    "size": 15337,
@@ -260,18 +267,11 @@
    "kind": "Word"
   },
   {
-   "name": "履歴書大塚秀美 (1).pdf",
+   "name": "大会宣言.docx",
    "dir": false,
-   "size": 123395,
-   "mtime": "2026/08/13 17:45",
-   "kind": "PDF"
-  },
-  {
-   "name": "成績表.xlsx",
-   "dir": false,
-   "size": 28494,
-   "mtime": "2026/08/24 16:03",
-   "kind": "Excel"
+   "size": 15175,
+   "mtime": "2026/08/25 18:07",
+   "kind": "Word"
   },
   {
    "name": "拡張機能.lnk",
@@ -279,34 +279,6 @@
    "size": 1073,
    "mtime": "2026/06/30 13:13",
    "kind": "ショートカット"
-  },
-  {
-   "name": "掛金納入報告書　.xlsx",
-   "dir": false,
-   "size": 243726,
-   "mtime": "2026/08/26 16:27",
-   "kind": "Excel"
-  },
-  {
-   "name": "採用.xlsx",
-   "dir": false,
-   "size": 12030,
-   "mtime": "2026/08/24 21:07",
-   "kind": "Excel"
-  },
-  {
-   "name": "新書記局日誌.xlsx",
-   "dir": false,
-   "size": 348167,
-   "mtime": "2026/01/21 13:02",
-   "kind": "Excel"
-  },
-  {
-   "name": "書記局規程.docx",
-   "dir": false,
-   "size": 32648,
-   "mtime": "2026/08/25 12:56",
-   "kind": "Word"
   },
   {
    "name": "月次更新.lnk",
@@ -323,53 +295,25 @@
    "kind": "Word"
   },
   {
-   "name": "組合員名簿2026.7.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE-KITAMATAPC-KITAMATAPC.accdb",
+   "name": "組合員名簿.xlsx",
+   "dir": false,
+   "size": 41292,
+   "mtime": "2026/08/31 17:49",
+   "kind": "Excel"
+  },
+  {
+   "name": "組合員名簿2026.9.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE.accdb",
    "dir": false,
    "size": 1642496,
-   "mtime": "2026/08/25 13:55",
+   "mtime": "2026/09/28 14:43",
    "kind": "Access"
   },
   {
-   "name": "組合員名簿2026.7.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE-KITAMATAPC-KITAMATAPC.laccdb",
+   "name": "財政システム (Ls210d18b) - ショートカット.lnk",
    "dir": false,
-   "size": 64,
-   "mtime": "2026/08/25 13:55",
-   "kind": "LACCDB ファイル"
-  },
-  {
-   "name": "組合員名簿2026.7.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE-KITAMATAPC.accdb",
-   "dir": false,
-   "size": 1642496,
-   "mtime": "2026/08/24 10:03",
-   "kind": "Access"
-  },
-  {
-   "name": "組合員名簿2026.7.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE.accdb",
-   "dir": false,
-   "size": 1642496,
-   "mtime": "2026/08/25 11:57",
-   "kind": "Access"
-  },
-  {
-   "name": "組織部年間目標案 (2).docx",
-   "dir": false,
-   "size": 11592,
-   "mtime": "2026/08/14 17:35",
-   "kind": "Word"
-  },
-  {
-   "name": "自共済26年08月26日.csv",
-   "dir": false,
-   "size": 211482,
-   "mtime": "2026/08/26 10:35",
-   "kind": "CSV ファイル"
-  },
-  {
-   "name": "訃報.docx",
-   "dir": false,
-   "size": 15044,
-   "mtime": "2026/08/17 08:29",
-   "kind": "Word"
+   "size": 1655,
+   "mtime": "2026/09/04 17:31",
+   "kind": "ショートカット"
   },
   {
    "name": "財政システム - ショートカット.lnk",
@@ -379,21 +323,14 @@
    "kind": "ショートカット"
   },
   {
-   "name": "通勤届（グループウェア）R7.9～.xlsx",
+   "name": "９月６日発言.docx",
    "dir": false,
-   "size": 34134,
-   "mtime": "2026/08/25 17:45",
-   "kind": "Excel"
-  },
-  {
-   "name": "２０２７年度特別会計出納帳.xlsx",
-   "dir": false,
-   "size": 32877,
-   "mtime": "2026/08/21 10:25",
-   "kind": "Excel"
+   "size": 18505,
+   "mtime": "2026/09/04 18:24",
+   "kind": "Word"
   }
  ],
- "total": 56,
- "links": 13,
- "at": "2026/08/27 11:13"
+ "total": 47,
+ "links": 15,
+ "at": "2026/09/30 10:22"
 }
