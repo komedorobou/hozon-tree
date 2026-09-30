@@ -106,13 +106,6 @@
    "kind": "PDF"
   },
   {
-   "name": "2027金銭出納帳 - .xls",
-   "dir": false,
-   "size": 220672,
-   "mtime": "2026/07/21 10:41",
-   "kind": "Excel"
-  },
-  {
    "name": "OneDrive.lnk",
    "dir": false,
    "size": 2071,
@@ -267,7 +260,7 @@
    "kind": "ショートカット"
   }
  ],
- "total": 38,
+ "total": 37,
  "links": 14,
- "at": "2026/09/30 16:49"
+ "at": "2026/09/30 16:50"
 }
