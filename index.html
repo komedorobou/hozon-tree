@@ -113,6 +113,7 @@ body.dragging .plus,body.dragging .arw{display:none}
 #sr .r .mt{font-size:10px;color:#a5a39b;white-space:nowrap}
 #sr .r .loc{font-size:11px;color:var(--ai);border:1px solid var(--line);border-radius:4px;padding:0 6px;cursor:pointer;background:#fff}
 #sr .r .loc:hover{background:var(--ai);color:#fff;border-color:var(--ai)}
+#side .list.tgt,#side h2.tgt{background:#f6efe0;outline:2px dashed var(--kin);outline-offset:-3px}
 #sr .msg{padding:14px;font-size:12px;color:#8a8880}
 
 footer{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);
@@ -780,6 +781,11 @@ function zRender() {
       zRender();
     };
     el.oncontextmenu = ev => sideMenu(ev, e, "z");
+    el.draggable = true;
+    el.ondragstart = ev => {
+      ev.dataTransfer.setData("text/plain", "z:" + e.rel);
+      ev.dataTransfer.effectAllowed = "copyMove";
+    };
     el.ondblclick = async () => {
       if (e.dir) {
         if (zOpen.has(e.rel)) zOpen.delete(e.rel);
@@ -971,6 +977,7 @@ function sideMenu(ev, e, where) {
   m.innerHTML =
     `<div data-a="open">${e.dir ? "エクスプローラーで開く" : "開く"}</div>` +
     `<div data-a="ren">名前の変更</div>` +
+    (where !== "dt" ? `<div data-a="copy">デスクトップにコピー</div>` : "") +
     `<hr><div data-a="del" class="dan">Z:	rashbox へ移す</div>`;
   m.classList.add("on");
   m.style.left = Math.min(ev.clientX, innerWidth - 210) + "px";
@@ -981,6 +988,8 @@ function sideMenu(ev, e, where) {
     if (!a) return;
     if (a === "open") {
       fetch(HELPER + "/api/open?path=" + encodeURIComponent(rel)).catch(() => { });
+    } else if (a === "copy") {
+      copyToDesktop(rel);
     } else if (a === "ren") {
       const nn = prompt("新しい名前", e.name);
       if (!nn || nn === e.name) return;
@@ -1009,10 +1018,47 @@ addEventListener("click", e => {
   if (!e.target.closest("#sideMenu")) document.getElementById("sideMenu").classList.remove("on");
 });
 
+/* ---- Z → デスクトップへコピー（元はZに残る） ---- */
+async function copyToDesktop(rel) {
+  if (mode !== "helper") { alert("読み役が動いてる時だけ使える。"); return; }
+  if (!/^Z(\\|$)/.test(rel)) { foot("デスクトップの物はそのまま（コピーはZの物だけ）"); return; }
+  const name = rel.split("\\").pop();
+  try {
+    const r = await fetch(HELPER + "/api/tocopy", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ srcs: [rel] })
+    });
+    const j = await r.json();
+    if (j.error) { alert("コピーできんかった：" + j.error); return; }
+    foot(`「${name}」をデスクトップにコピーした` + (j.names[0] !== name ? `（「${j.names[0]}」の名前で）` : ""));
+    dtKids = {}; listDesktop();
+  } catch (e) { alert("読み役につながらん"); }
+}
+
+// デスクトップ欄に落としたらコピー
+(function () {
+  const targets = [document.getElementById("dtList"), document.getElementById("dtHead")];
+  const pickRel = ev => {
+    const d = ev.dataTransfer.getData("text/plain") || "";
+    if (d.startsWith("z:")) return d.slice(2);
+    if (d.startsWith("sr:")) return d.slice(3);
+    return null;
+  };
+  targets.forEach(t => {
+    t.addEventListener("dragover", ev => { ev.preventDefault(); ev.dataTransfer.dropEffect = "copy"; t.classList.add("tgt"); });
+    t.addEventListener("dragleave", () => t.classList.remove("tgt"));
+    t.addEventListener("drop", ev => {
+      ev.preventDefault(); t.classList.remove("tgt");
+      const rel = pickRel(ev);
+      if (rel) copyToDesktop(rel);
+    });
+  });
+})();
+
 function refreshPanels(where) {
   if (where === "dt") { dtKids = {}; listDesktop(); }
   else if (where === "zr") { zrKids = {}; zrShow(); }
-  else { zKids = {}; if (sel) showBranch(sel); }
+  else { zKids = {}; if (sel) showBranch(sel); if (where === "sr") srAgain(); }
 }
 
 
@@ -1139,6 +1185,9 @@ function srDraw(items) {
                                  (reveal ? "&reveal=1" : "")).catch(() => { });
     el.ondblclick = () => open(false);
     el.querySelector(".loc").onclick = ev => { ev.stopPropagation(); open(true); };
+    if (e.rel && /^Z(\\|$)/.test(e.rel)) {           // Z の物は右クリックでデスクトップへコピー
+      el.oncontextmenu = ev => sideMenu(ev, { name: e.name, dir: e.dir, rel: e.rel }, "sr");
+    }
     if (e.rel) {                                     // デスクトップと Z の物だけ枝へ運べる
       el.draggable = true;
       el.ondragstart = ev => {
