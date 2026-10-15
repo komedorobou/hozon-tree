@@ -8,10 +8,17 @@
    "kind": "フォルダー"
   },
   {
+   "name": "THE給与控除関係",
+   "dir": true,
+   "size": 0,
+   "mtime": "2026/10/15 09:43",
+   "kind": "フォルダー"
+  },
+  {
    "name": "きたｍｔ",
    "dir": true,
    "size": 0,
-   "mtime": "2026/09/30 10:20",
+   "mtime": "2026/10/13 11:43",
    "kind": "フォルダー"
   },
   {
@@ -25,7 +32,14 @@
    "name": "共済システム_移行キット",
    "dir": true,
    "size": 0,
-   "mtime": "2026/10/01 11:42",
+   "mtime": "2026/10/08 10:43",
+   "kind": "フォルダー"
+  },
+  {
+   "name": "共済資料",
+   "dir": true,
+   "size": 0,
+   "mtime": "2026/10/15 13:37",
    "kind": "フォルダー"
   },
   {
@@ -46,14 +60,14 @@
    "name": "日刊",
    "dir": true,
    "size": 0,
-   "mtime": "2026/09/25 09:03",
+   "mtime": "2026/10/14 10:34",
    "kind": "フォルダー"
   },
   {
    "name": "當舎",
    "dir": true,
    "size": 0,
-   "mtime": "2026/09/30 10:20",
+   "mtime": "2026/10/14 10:32",
    "kind": "フォルダー"
   },
   {
@@ -71,24 +85,10 @@
    "kind": "ショートカット"
   },
   {
-   "name": "141646.jpg",
+   "name": "2026-10-07　全機関役員学習会次第.docx",
    "dir": false,
-   "size": 336299,
-   "mtime": "2026/10/01 14:19",
-   "kind": "画像"
-  },
-  {
-   "name": "2026-09-30　第３回中央執行委員会.docx",
-   "dir": false,
-   "size": 58850,
-   "mtime": "2026/09/30 16:58",
-   "kind": "Word"
-  },
-  {
-   "name": "2026-8-25第１回中央執行委員会.docx",
-   "dir": false,
-   "size": 71907,
-   "mtime": "2026/08/25 09:34",
+   "size": 20395,
+   "mtime": "2026/10/07 13:04",
    "kind": "Word"
   },
   {
@@ -113,17 +113,45 @@
    "kind": "Excel"
   },
   {
-   "name": "2026年第9回幹事会レジメ.docx",
+   "name": "20261007_岸和田市職労秋季年末賃金確定闘争学習会【寺内】 (2).docx",
    "dir": false,
-   "size": 41175,
-   "mtime": "2026/08/10 10:57",
+   "size": 958539,
+   "mtime": "2026/10/09 17:37",
    "kind": "Word"
   },
   {
-   "name": "2027年度議案書（案） 9月12日.pdf",
+   "name": "20261007_岸和田市職労秋季年末賃金確定闘争学習会【寺内】.docx",
    "dir": false,
-   "size": 1193112,
-   "mtime": "2026/09/29 14:35",
+   "size": 958539,
+   "mtime": "2026/10/07 16:34",
+   "kind": "Word"
+  },
+  {
+   "name": "2026秋季年末アンケート集計.xlsx",
+   "dir": false,
+   "size": 46266,
+   "mtime": "2026/10/14 17:39",
+   "kind": "Excel"
+  },
+  {
+   "name": "2026秋季年末アンケート集計_backup_20261014.xlsx",
+   "dir": false,
+   "size": 43373,
+   "mtime": "2026/10/14 09:47",
+   "kind": "Excel"
+  },
+  {
+   "name": "2026秋季闘争職討資料 (2).docx",
+   "dir": false,
+   "size": 82818,
+   "mtime": "2026/10/07 12:58",
+   "kind": "Word"
+  },
+  {
+   "name": "296103_296103_共済金支払受領書_20261008_180633.pdf",
+   "dir": false,
+   "size": 69311,
+   "mtime": "2026/10/13 10:21",
    "kind": "PDF"
   },
   {
@@ -199,16 +227,16 @@
   {
    "name": "カンパ.xlsx",
    "dir": false,
-   "size": 13654,
-   "mtime": "2026/09/02 10:33",
+   "size": 14097,
+   "mtime": "2026/10/08 15:54",
    "kind": "Excel"
   },
   {
-   "name": "メインビジュアル最終稿.jpg",
+   "name": "シニア共済の給付対象.docx",
    "dir": false,
-   "size": 4532242,
-   "mtime": "2026/10/01 17:03",
-   "kind": "画像"
+   "size": 15230,
+   "mtime": "2026/10/14 13:54",
+   "kind": "Word"
   },
   {
    "name": "保存ルール_ツリー.url",
@@ -220,8 +248,8 @@
   {
    "name": "全職員名簿.xlsx",
    "dir": false,
-   "size": 250448,
-   "mtime": "2026/09/17 12:55",
+   "size": 250910,
+   "mtime": "2026/10/06 12:56",
    "kind": "Excel"
   },
   {
@@ -239,11 +267,39 @@
    "kind": "インターネット"
   },
   {
-   "name": "旅費支給の運用変更について（通知）.pdf",
+   "name": "大塚 自己紹介(書記局).docx",
    "dir": false,
-   "size": 133334,
-   "mtime": "2026/10/01 15:56",
-   "kind": "PDF"
+   "size": 16381,
+   "mtime": "2026/10/15 09:36",
+   "kind": "Word"
+  },
+  {
+   "name": "大塚 自己紹介.docx",
+   "dir": false,
+   "size": 16376,
+   "mtime": "2026/10/15 09:32",
+   "kind": "Word"
+  },
+  {
+   "name": "大塚写真.jpeg",
+   "dir": false,
+   "size": 3646377,
+   "mtime": "2026/10/14 11:18",
+   "kind": "画像"
+  },
+  {
+   "name": "日刊記事途中.docx",
+   "dir": false,
+   "size": 246743,
+   "mtime": "2026/10/14 16:12",
+   "kind": "Word"
+  },
+  {
+   "name": "書記の仲間写真.jpeg",
+   "dir": false,
+   "size": 5257829,
+   "mtime": "2026/10/15 13:00",
+   "kind": "画像"
   },
   {
    "name": "月次更新.lnk",
@@ -267,6 +323,27 @@
    "kind": "Excel"
   },
   {
+   "name": "火災共済_継続加入申込一覧.xlsx",
+   "dir": false,
+   "size": 16022,
+   "mtime": "2026/10/07 09:11",
+   "kind": "Excel"
+  },
+  {
+   "name": "組合員ポータル_役員学習会資料_新版.pptx",
+   "dir": false,
+   "size": 6556767,
+   "mtime": "2026/10/07 20:23",
+   "kind": "PowerPoint"
+  },
+  {
+   "name": "組合員ポータルカード配布のご案内.docx",
+   "dir": false,
+   "size": 28020,
+   "mtime": "2026/10/14 10:37",
+   "kind": "Word"
+  },
+  {
    "name": "組合員名簿.xlsx",
    "dir": false,
    "size": 41292,
@@ -274,10 +351,24 @@
    "kind": "Excel"
   },
   {
+   "name": "組合員名簿2026.9.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE-KITAMATAPC.accdb",
+   "dir": false,
+   "size": 1642496,
+   "mtime": "2026/10/15 13:32",
+   "kind": "Access"
+  },
+  {
+   "name": "組合員名簿2026.9.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE-KITAMATAPC.laccdb",
+   "dir": false,
+   "size": 128,
+   "mtime": "2026/10/15 13:36",
+   "kind": "LACCDB ファイル"
+  },
+  {
    "name": "組合員名簿2026.9.1-ULTLA-KITAMATAPC-NECNOTE-KITAMATAPC-NECNOTE-NECNOTE-NECNOTE.accdb",
    "dir": false,
    "size": 1642496,
-   "mtime": "2026/10/01 11:34",
+   "mtime": "2026/10/14 16:18",
    "kind": "Access"
   },
   {
@@ -286,16 +377,9 @@
    "size": 1655,
    "mtime": "2026/09/04 17:31",
    "kind": "ショートカット"
-  },
-  {
-   "name": "通勤手当の運用変更について（通知） (2).pdf",
-   "dir": false,
-   "size": 88199,
-   "mtime": "2026/10/01 15:56",
-   "kind": "PDF"
   }
  ],
- "total": 42,
+ "total": 54,
  "links": 12,
- "at": "2026/10/02 08:46"
+ "at": "2026/10/15 14:16"
 }
